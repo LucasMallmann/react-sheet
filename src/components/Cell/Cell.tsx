@@ -1,20 +1,43 @@
 import { useRef, useState } from "react";
+import { atom, useRecoilState } from "recoil";
 import classes from "./Cell.module.scss";
+import { useClickawayCell } from "@/hooks";
 
-const Cell = () => {
+const cellState = atom({
+  key: "cellState",
+  default: "",
+});
+
+type CellProps = {
+  id?: string;
+};
+
+function Cell({ id = "1" }: CellProps) {
+  const [cellValue, setCellValue] = useRecoilState(cellState);
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const enableEditMode = () => {
+  useClickawayCell(inputRef, {
+    cellId: id,
+    onClickAway: () => {
+      setEditMode(false);
+    },
+  });
+
+  function enableEditMode() {
     setEditMode(true);
-    inputRef.current?.focus();
-  };
+    setTimeout(() => {
+      inputRef.current?.focus();
+    });
+  }
 
   if (isEditMode) {
     return (
       <input
+        value={cellValue}
+        onChange={(e) => setCellValue(e.target.value)}
         type="text"
-        data-cell-id="1"
+        data-cell-id={id}
         className={[classes.input, classes.base].join(" ")}
         ref={inputRef}
         onKeyDown={(e) => {
@@ -29,12 +52,12 @@ const Cell = () => {
   return (
     <div
       className={[classes.label, classes.base].join(" ")}
-      data-cell-id="1"
+      data-cell-id={id}
       onClick={enableEditMode}
     >
-      Value
+      {cellValue}
     </div>
   );
-};
+}
 
 export default Cell;
