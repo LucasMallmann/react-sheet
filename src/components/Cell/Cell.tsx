@@ -1,19 +1,19 @@
 import { useRef, useState } from "react";
-import { atom, useRecoilState } from "recoil";
-import classes from "./Cell.module.scss";
+import { atomFamily, useRecoilState } from "recoil";
 import { useClickawayCell } from "@/hooks";
+import classes from "./Cell.module.scss";
 
-const cellState = atom({
+const cellState = atomFamily({
   key: "cellState",
   default: "",
 });
 
 type CellProps = {
-  id?: string;
+  id: string;
 };
 
-function Cell({ id = "1" }: CellProps) {
-  const [cellValue, setCellValue] = useRecoilState(cellState);
+function Cell({ id }: CellProps) {
+  const [cellValue, setCellValue] = useRecoilState(cellState(id));
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 

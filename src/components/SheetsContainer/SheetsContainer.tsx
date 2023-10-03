@@ -1,41 +1,51 @@
 import Cell from "../Cell/Cell";
+import CellAxis from "../Cell/CellAxis";
 import classes from "./SheetsContainer.module.scss";
 
 const numberOfColumns = 10;
 const numberOfRows = 10;
-
-const rows = [...Array(numberOfRows)];
-const columns = [...Array(numberOfColumns)];
+const headerRowQuantity = 1;
 
 function SheetsContainer() {
+  function buildTableHeaders(index: number) {
+    if (index === 0) {
+      return <CellAxis key={index} scope="col"></CellAxis>;
+    }
+    return (
+      <CellAxis key={index} scope="col">
+        {index}
+      </CellAxis>
+    );
+  }
+
+  function buildTableRows(rowIndex: number) {
+    return (
+      <tr key={rowIndex}>
+        <CellAxis>{rowIndex + 1}</CellAxis>
+        {[...Array(numberOfColumns)].map((_, columnIndex) => {
+          return (
+            <td key={columnIndex}>
+              <Cell id={`${rowIndex}-${columnIndex}`} />
+            </td>
+          );
+        })}
+      </tr>
+    );
+  }
+
   return (
     <div className={classes.container}>
       <table>
         <thead>
           <tr>
-            {columns.map((_, columnIndex) => (
-              <th key={columnIndex} scope="col">
-                {columnIndex}
-              </th>
-            ))}
+            {[...Array(numberOfColumns + headerRowQuantity)].map((_, index) =>
+              buildTableHeaders(index)
+            )}
           </tr>
         </thead>
-        <tbody>
-          {rows.map((_, rowIndex) => {
-            return (
-              <tr key={rowIndex}>
-                <th>{rowIndex + 1}</th>
-                {columns.map((_, columnIndex) => {
-                  return (
-                    <td key={columnIndex}>
-                      <Cell id={`${rowIndex}-${columnIndex}`} />
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
+        {[...Array(numberOfRows)].map((_, rowIndex) =>
+          buildTableRows(rowIndex)
+        )}
       </table>
     </div>
   );
