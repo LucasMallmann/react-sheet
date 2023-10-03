@@ -1,13 +1,8 @@
-import { RefObject, useEffect } from "react";
-
-type Params = {
-  onClickAway: (event: MouseEvent) => void;
-  cellId: string;
-};
+import { useEffect } from "react";
 
 export function useClickawayCell(
-  ref: RefObject<HTMLElement>,
-  { onClickAway, cellId }: Params
+  cellId: string,
+  onClickAway: (event: MouseEvent) => void
 ) {
   useEffect(() => {
     const handler = (event: MouseEvent) => {
@@ -20,5 +15,5 @@ export function useClickawayCell(
     return () => {
       document.removeEventListener("click", handler);
     };
-  }, [ref, onClickAway, cellId]);
+  }, [onClickAway, cellId]);
 }

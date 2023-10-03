@@ -17,11 +17,8 @@ function Cell({ id = "1" }: CellProps) {
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useClickawayCell(inputRef, {
-    cellId: id,
-    onClickAway: () => {
-      setEditMode(false);
-    },
+  useClickawayCell(id, () => {
+    setEditMode(false);
   });
 
   function enableEditMode() {
