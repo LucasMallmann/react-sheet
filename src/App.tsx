@@ -1,14 +1,12 @@
 import { RecoilRoot } from "recoil";
-import Cell from "@/components/Cell/Cell";
+import SheetsContainer from "./components/SheetsContainer/SheetsContainer";
 
 function App() {
   return (
     <RecoilRoot>
       <div>
         <h1>Ola mundo</h1>
-        <section>
-          <Cell />
-        </section>
+        <SheetsContainer />
       </div>
     </RecoilRoot>
   );
