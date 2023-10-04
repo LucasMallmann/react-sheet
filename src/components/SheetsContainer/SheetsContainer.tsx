@@ -1,5 +1,6 @@
-import Cell from "../Cell/Cell";
-import CellAxis from "../Cell/CellAxis";
+import Cell from "@/components/Cell/Cell";
+import CellAxis from "@/components/Cell/CellAxis";
+import { numberToChar } from "@/utils";
 import classes from "./SheetsContainer.module.scss";
 
 const numberOfColumns = 10;
@@ -13,7 +14,7 @@ function SheetsContainer() {
     }
     return (
       <CellAxis key={index} scope="col">
-        {index}
+        {numberToChar(index)}
       </CellAxis>
     );
   }
