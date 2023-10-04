@@ -1,12 +1,9 @@
 import { useRef, useState } from "react";
-import { atomFamily, useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useClickawayCell } from "@/hooks";
-import classes from "./Cell.module.scss";
+import { cellState, evaluatedCellState } from "@/store/cell";
 
-const cellState = atomFamily({
-  key: "cellState",
-  default: "",
-});
+import classes from "./Cell.module.scss";
 
 type CellProps = {
   id: string;
@@ -16,6 +13,8 @@ function Cell({ id }: CellProps) {
   const [cellValue, setCellValue] = useRecoilState(cellState(id));
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const evaluatedCellValue = useRecoilValue(evaluatedCellState(id));
 
   useClickawayCell(id, () => {
     setEditMode(false);
@@ -52,7 +51,7 @@ function Cell({ id }: CellProps) {
       data-cell-id={id}
       onClick={enableEditMode}
     >
-      {cellValue}
+      {evaluatedCellValue}
     </div>
   );
 }
