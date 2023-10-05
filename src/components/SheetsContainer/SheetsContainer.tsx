@@ -5,51 +5,39 @@ import classes from "./SheetsContainer.module.scss";
 
 const numberOfColumns = 10;
 const numberOfRows = 10;
-const headerRowQuantity = 1;
 
 function SheetsContainer() {
-  function buildTableHeaders(index: number) {
-    if (index === 0) {
-      return <CellAxis key={index} scope="col"></CellAxis>;
-    }
+  function renderTableHeaders() {
     return (
-      <CellAxis key={index} scope="col">
-        {numberToChar(index)}
-      </CellAxis>
+      <tr>
+        <CellAxis key={0} scope="col"></CellAxis>
+        {[...Array(numberOfColumns)].map((_, columnIndex) => (
+          <CellAxis key={columnIndex + 1} scope="col">
+            {numberToChar(columnIndex + 1)}
+          </CellAxis>
+        ))}
+      </tr>
     );
   }
 
-  function buildTableRows(rowIndex: number) {
-    return (
+  function renderTableRows() {
+    return [...Array(numberOfRows)].map((_, rowIndex) => (
       <tr key={rowIndex}>
         <CellAxis>{rowIndex + 1}</CellAxis>
-        {[...Array(numberOfColumns)].map((_, columnIndex) => {
-          const id = `${rowIndex}-${columnIndex}`;
-          return (
-            <td key={id}>
-              <Cell id={id} />
-            </td>
-          );
-        })}
+        {[...Array(numberOfColumns)].map((_, columnIndex) => (
+          <td key={`${rowIndex}-${columnIndex}`}>
+            <Cell id={`${rowIndex}-${columnIndex}`} />
+          </td>
+        ))}
       </tr>
-    );
+    ));
   }
 
   return (
     <div className={classes.container}>
       <table>
-        <thead>
-          <tr>
-            {[...Array(numberOfColumns + headerRowQuantity)].map((_, index) =>
-              buildTableHeaders(index)
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {[...Array(numberOfRows)].map((_, rowIndex) =>
-            buildTableRows(rowIndex)
-          )}
-        </tbody>
+        <thead>{renderTableHeaders()}</thead>
+        <tbody>{renderTableRows()}</tbody>
       </table>
     </div>
   );
