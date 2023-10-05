@@ -15,9 +15,6 @@ const OPERATIONS_MAPPING_ORDER = [
 function tokenize(expression: string): Token[] {
   // Transform expression from "1 + 2" to ["1", "+", "2"]
   const splittedExpression = expression.match(/([-+*/]|\d+\.\d+|\d+)/g);
-  // if (!splittedExpression) {
-  //   return "!ERROR";
-  // }
   return splittedExpression!.map((token) => {
     if (OPERATORS_REGEX.test(token)) {
       return token;
@@ -32,17 +29,12 @@ type Token = string | number;
  * Evaluates a mathematical expression and returns the result.
  * @param expression Expression to be evaluated as an equation
  */
-export function evaluateEquation(
-  expression: string
-): number | string | undefined {
-  if (!expression) {
-    return;
-  }
-  let tokens = tokenize(expression);
-
+export function evaluateEquation(expression: string): string {
   if (!expression) {
     return "!ERROR";
   }
+
+  let tokens = tokenize(expression);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let operationFn: any = null;
@@ -67,5 +59,6 @@ export function evaluateEquation(
   if (tokens.length !== 1) {
     throw new Error("Invalid expression");
   }
-  return tokens[0] as number;
+
+  return tokens[0].toString();
 }
