@@ -21,26 +21,43 @@ function Cell({ id }: CellProps) {
   });
 
   function enableEditMode() {
+    setCellValue((state) => ({
+      ...state,
+      evaluate: false,
+    }));
     setEditMode(true);
     setTimeout(() => {
       inputRef.current?.focus();
     });
   }
 
+  function updateCellValue(e: React.ChangeEvent<HTMLInputElement>) {
+    setCellValue((state) => ({
+      ...state,
+      value: e.target.value,
+    }));
+  }
+
+  function enableEvaluateCell(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      setEditMode(false);
+      setCellValue((state) => ({
+        ...state,
+        evaluate: true,
+      }));
+    }
+  }
+
   if (isEditMode) {
     return (
       <input
-        value={cellValue}
-        onChange={(e) => setCellValue(e.target.value)}
+        value={cellValue.value}
+        onChange={updateCellValue}
         type="text"
         data-cell-id={id}
         className={[classes.input, classes.base].join(" ")}
         ref={inputRef}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            setEditMode(false);
-          }
-        }}
+        onKeyDown={enableEvaluateCell}
       />
     );
   }

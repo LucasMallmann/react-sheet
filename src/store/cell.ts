@@ -1,8 +1,13 @@
 import { atomFamily, selectorFamily } from "recoil";
 
+import { evaluateEquation } from "@/utils";
+
 export const cellState = atomFamily({
   key: "cellState",
-  default: "",
+  default: {
+    value: "",
+    evaluate: false,
+  },
 });
 
 export const evaluatedCellState = selectorFamily({
@@ -10,12 +15,15 @@ export const evaluatedCellState = selectorFamily({
   get:
     (id) =>
     ({ get }) => {
-      const value = get(cellState(id));
+      const cell = get(cellState(id));
 
-      if (!value.startsWith("=")) {
-        return value;
+      if (!cell.evaluate) {
+        return cell.value;
+      }
+      if (cell.value.startsWith("=")) {
+        return evaluateEquation(cell.value.slice(1));
       }
 
-      return `[${String(id)}]=${value}`;
+      return cell.value;
     },
 });

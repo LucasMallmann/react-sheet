@@ -24,9 +24,10 @@ function SheetsContainer() {
       <tr key={rowIndex}>
         <CellAxis>{rowIndex + 1}</CellAxis>
         {[...Array(numberOfColumns)].map((_, columnIndex) => {
+          const id = `${rowIndex}-${columnIndex}`;
           return (
-            <td key={columnIndex}>
-              <Cell id={`${rowIndex}-${columnIndex}`} />
+            <td key={id}>
+              <Cell id={id} />
             </td>
           );
         })}
@@ -44,9 +45,11 @@ function SheetsContainer() {
             )}
           </tr>
         </thead>
-        {[...Array(numberOfRows)].map((_, rowIndex) =>
-          buildTableRows(rowIndex)
-        )}
+        <tbody>
+          {[...Array(numberOfRows)].map((_, rowIndex) =>
+            buildTableRows(rowIndex)
+          )}
+        </tbody>
       </table>
     </div>
   );

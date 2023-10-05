@@ -15,10 +15,10 @@ const OPERATIONS_MAPPING_ORDER = [
 function tokenize(expression: string): Token[] {
   // Transform expression from "1 + 2" to ["1", "+", "2"]
   const splittedExpression = expression.match(/([-+*/]|\d+\.\d+|\d+)/g);
-  if (!splittedExpression) {
-    throw new Error("Invalid expression");
-  }
-  return splittedExpression.map((token) => {
+  // if (!splittedExpression) {
+  //   return "!ERROR";
+  // }
+  return splittedExpression!.map((token) => {
     if (OPERATORS_REGEX.test(token)) {
       return token;
     }
@@ -32,8 +32,17 @@ type Token = string | number;
  * Evaluates a mathematical expression and returns the result.
  * @param expression Expression to be evaluated as an equation
  */
-export function parse(expression: string): number {
+export function evaluateEquation(
+  expression: string
+): number | string | undefined {
+  if (!expression) {
+    return;
+  }
   let tokens = tokenize(expression);
+
+  if (!expression) {
+    return "!ERROR";
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let operationFn: any = null;
