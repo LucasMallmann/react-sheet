@@ -8,7 +8,7 @@ type CellProps = {
   id: string;
 };
 
-function Cell({ id }: CellProps) {
+function CellTest({ id }: CellProps) {
   const { cells, dispatchCells } = useSheetsContext();
 
   const cell = cells[id];
@@ -69,4 +69,4 @@ function Cell({ id }: CellProps) {
   );
 }
 
-export default Cell;
+export default CellTest;
