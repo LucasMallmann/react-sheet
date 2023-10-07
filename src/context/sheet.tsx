@@ -42,10 +42,33 @@ type UpdateCellPayload = {
   newValue: string;
 };
 
+function removeIdFromDependents(cells: Cell, id: string): Cell {
+  const updatedCells = { ...cells };
+  for (const cellId in updatedCells) {
+    if (updatedCells[cellId]) {
+      const dependents = updatedCells[cellId]?.dependents || [];
+      if (dependents.includes(id)) {
+        updatedCells[cellId] = {
+          ...updatedCells[cellId],
+          dependents: dependents.filter((dependentId) => dependentId !== id),
+        };
+      }
+    }
+  }
+  return updatedCells;
+}
+
 function updateCell(
   cells: Cell,
-  { cellId, newValue }: UpdateCellPayload
+  { cellId, newValue }: UpdateCellPayload,
+  visited = new Set<string>()
 ): Cell {
+  if (visited.has(cellId)) {
+    throw new Error("Circular dependency detected");
+  }
+
+  visited.add(cellId);
+
   let updatedCells = { ...cells };
   updatedCells[cellId] = {
     ...updatedCells[cellId],
@@ -97,13 +120,15 @@ function cellReducer(cellState: Cell, action: Action): Cell {
           },
           [referencedCellId]: {
             ...referencedCell,
-            dependents: [...(referencedCell.dependents || []), currentId],
+            dependents: [...(referencedCell?.dependents || []), currentId],
           },
         };
       }
 
+      const cleanedUpDependents = removeIdFromDependents(cellState, currentId);
+
       // TODO Recalculate and change all dependents cells
-      return updateCell(cellState, {
+      return updateCell(cleanedUpDependents, {
         cellId: currentId,
         newValue: formula,
       });

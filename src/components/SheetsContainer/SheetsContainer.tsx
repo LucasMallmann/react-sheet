@@ -4,8 +4,8 @@ import CellAxis from "@/components/Cell/CellAxis";
 import { numberToChar } from "@/utils";
 import classes from "./SheetsContainer.module.scss";
 
-const numberOfColumns = 10;
-const numberOfRows = 10;
+const numberOfColumns = 30;
+const numberOfRows = 100;
 
 function SheetsContainer() {
   function renderTableHeaders() {
