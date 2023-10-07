@@ -3,11 +3,14 @@ import Cell from "@/components/Cell/Cell";
 import CellAxis from "@/components/Cell/CellAxis";
 import { numberToChar } from "@/utils";
 import classes from "./SheetsContainer.module.scss";
+import { SheetActions, useSheetsContext } from "@/context/sheet";
 
 const numberOfColumns = 30;
 const numberOfRows = 100;
 
 function SheetsContainer() {
+  const { dispatchCells } = useSheetsContext();
+
   function renderTableHeaders() {
     return (
       <tr>
@@ -36,6 +39,16 @@ function SheetsContainer() {
 
   return (
     <div className={classes.container}>
+      <button
+        type="button"
+        onClick={() =>
+          dispatchCells({
+            type: SheetActions.CLEAR,
+          })
+        }
+      >
+        Clear
+      </button>
       <table>
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>

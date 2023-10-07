@@ -27,7 +27,8 @@ type ActionPayload = {
 
 type Action =
   | { type: "UPDATE_CELL_FORMULA"; payload: ActionPayload }
-  | { type: "EVALUATE_CELL"; payload: Omit<ActionPayload, "formula"> };
+  | { type: "EVALUATE_CELL"; payload: Omit<ActionPayload, "formula"> }
+  | { type: "CLEAR" };
 
 export enum SheetActions {
   UPDATE_CELL_FORMULA = "UPDATE_CELL_FORMULA",
@@ -60,28 +61,19 @@ function removeIdFromDependents(cells: Cell, id: string): Cell {
 
 function updateCell(
   cells: Cell,
-  { cellId, newValue }: UpdateCellPayload,
-  visited = new Set<string>()
+  { cellId, newValue }: UpdateCellPayload
 ): Cell {
-  if (visited.has(cellId)) {
-    throw new Error("Circular dependency detected");
-  }
-
-  visited.add(cellId);
-
   let updatedCells = { ...cells };
   updatedCells[cellId] = {
     ...updatedCells[cellId],
     value: newValue,
   };
-
   cells[cellId]?.dependents?.forEach((dependentId) => {
     updatedCells = updateCell(updatedCells, {
       cellId: dependentId,
       newValue,
     });
   });
-
   return updatedCells;
 }
 
@@ -106,7 +98,6 @@ function cellReducer(cellState: Cell, action: Action): Cell {
       const isFormulaAReference = currentCell.formula.startsWith("=");
       const isReferenceValid = ROW_COLUMN_PATTERN.test(formula);
 
-      // TODO: update dependents of the referenced cell
       if (isFormulaAReference && isReferenceValid) {
         const { row, column } = cellIdtoMatrixIndices(formula);
         const referencedCellId = `${row}-${column}`;
@@ -125,13 +116,13 @@ function cellReducer(cellState: Cell, action: Action): Cell {
         };
       }
 
-      const cleanedUpDependents = removeIdFromDependents(cellState, currentId);
-
-      // TODO Recalculate and change all dependents cells
-      return updateCell(cleanedUpDependents, {
+      return updateCell(removeIdFromDependents(cellState, currentId), {
         cellId: currentId,
         newValue: formula,
       });
+    }
+    case SheetActions.CLEAR: {
+      return {};
     }
   }
   return cellState;
