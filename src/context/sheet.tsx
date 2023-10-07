@@ -89,7 +89,7 @@ function isCircularReference(
 ): boolean {
   const visited = new Set<string>();
 
-  function hasCircularReference(currentId: string, referencedCellId: string) {
+  function hasCircularReference(currentId: string) {
     if (visited.has(currentId)) {
       return true;
     }
@@ -100,7 +100,7 @@ function isCircularReference(
       if (dependentId === referencedCellId) {
         return true;
       }
-      if (hasCircularReference(dependentId, referencedCellId)) {
+      if (hasCircularReference(dependentId)) {
         return true;
       }
     }
@@ -108,7 +108,7 @@ function isCircularReference(
     return false;
   }
 
-  return hasCircularReference(cellId, referencedCellId);
+  return hasCircularReference(cellId);
 }
 
 function cellReducer(cellState: Cell, action: Action): Cell {
