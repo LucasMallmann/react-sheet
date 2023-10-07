@@ -77,6 +77,35 @@ function updateCell(
   return updatedCells;
 }
 
+function isCircularReference(
+  cellState: Cell,
+  cellId: string,
+  referencedCellId: string
+): boolean {
+  const visited = new Set<string>();
+
+  function hasCircularReference(currentId: string, referencedCellId: string) {
+    if (visited.has(currentId)) {
+      return true;
+    }
+    visited.add(currentId);
+    const currentCell = cellState[currentId];
+    const dependents = currentCell?.dependents || [];
+    for (const dependentId of dependents) {
+      if (dependentId === referencedCellId) {
+        return true;
+      }
+      if (hasCircularReference(dependentId, referencedCellId)) {
+        return true;
+      }
+    }
+    visited.delete(currentId);
+    return false;
+  }
+
+  return hasCircularReference(cellId, referencedCellId);
+}
+
 function cellReducer(cellState: Cell, action: Action): Cell {
   switch (action.type) {
     case SheetActions.UPDATE_CELL_FORMULA: {
@@ -102,6 +131,18 @@ function cellReducer(cellState: Cell, action: Action): Cell {
         const { row, column } = cellIdtoMatrixIndices(formula);
         const referencedCellId = `${row}-${column}`;
         const referencedCell = cellState[referencedCellId];
+        const isCircularRef = isCircularReference(
+          cellState,
+          currentId,
+          referencedCellId
+        );
+
+        if (isCircularRef) {
+          throw new Error("Circular reference");
+        }
+
+        console.log({ isCircularRef, currentId, referencedCellId });
+
         return {
           ...cellState,
           [currentId]: {
