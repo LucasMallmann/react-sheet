@@ -148,18 +148,33 @@ function cellReducer(cellState: Cell, action: Action): Cell {
 
         console.log({ isCircularRef, currentId, referencedCellId });
 
-        return {
-          ...cellState,
-          [currentId]: {
-            ...cellState[currentId],
-            value: referencedCell?.value,
-            formula: cellFormula,
+        const newValue = referencedCell?.value || "";
+        return updateCell(
+          {
+            ...cellState,
+            [referencedCellId]: {
+              ...referencedCell,
+              dependents: [...(referencedCell?.dependents || []), currentId],
+            },
           },
-          [referencedCellId]: {
-            ...referencedCell,
-            dependents: [...(referencedCell?.dependents || []), currentId],
-          },
-        };
+          {
+            cellId: currentId,
+            newValue,
+          }
+        );
+
+        // return {
+        //   ...cellState,
+        //   [currentId]: {
+        //     ...cellState[currentId],
+        //     value: referencedCell?.value,
+        //     formula: cellFormula,
+        //   },
+        //   [referencedCellId]: {
+        //     ...referencedCell,
+        //     dependents: [...(referencedCell?.dependents || []), currentId],
+        //   },
+        // };
       }
 
       const dependents = currentCell?.dependents || [];

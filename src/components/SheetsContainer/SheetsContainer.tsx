@@ -5,8 +5,8 @@ import { numberToChar } from "@/utils";
 import classes from "./SheetsContainer.module.scss";
 import { SheetActions, useSheetsContext } from "@/context/sheet";
 
-const numberOfColumns = 30;
-const numberOfRows = 100;
+const numberOfColumns = 10;
+const numberOfRows = 10;
 
 function SheetsContainer() {
   const { dispatchCells } = useSheetsContext();
