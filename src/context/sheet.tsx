@@ -103,18 +103,24 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
 
       return {
         ...sheetState,
-        cells: {
-          ...sheetState.cells,
-          [currentId]: {
-            ...cells[currentId],
-            value: userInput,
-            formula: userInput,
+        cells: removeIdFromDependents(
+          {
+            ...sheetState.cells,
+            [currentId]: {
+              ...cells[currentId],
+              value: userInput,
+              formula: userInput,
+            },
           },
-        },
+          currentId
+        ),
       };
     }
     case SheetActions.CLEAR: {
-      return {} as SheetState;
+      return {
+        cells: {},
+        circularReference: null,
+      } as SheetState;
     }
     case SheetActions.LOAD_FROM_LOCALSTORAGE: {
       return {

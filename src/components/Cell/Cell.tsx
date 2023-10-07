@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
 import classes from "./Cell.module.scss";
 import { SheetActions, useSheetsContext } from "@/context/sheet";
@@ -12,9 +12,13 @@ function Cell({ id }: CellProps) {
   const [value, setValue] = useState("");
   const { cells, dispatchCells } = useSheetsContext();
 
-  // const debouncedValue = useDebounce(value);
-
   const cell = cells[id];
+
+  useEffect(() => {
+    if (!cell || !cell?.value) {
+      setValue("");
+    }
+  }, [cell]);
 
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

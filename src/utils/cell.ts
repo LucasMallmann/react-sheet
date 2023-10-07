@@ -33,11 +33,10 @@ export function updateCell(
 ): Cells {
   let updatedCells = { ...cells };
 
-  console.log({ updatedCells });
-
   updatedCells[cellId] = {
     ...updatedCells[cellId],
     value: newValue,
+    formula: newValue,
   };
   cells[cellId]?.dependents?.forEach((dependentId) => {
     updatedCells = updateCell(updatedCells, {
