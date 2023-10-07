@@ -42,20 +42,27 @@ export enum SheetActions {
 
 const ROW_COLUMN_PATTERN = /^([A-Za-z]+)([0-9]+)$/;
 
-function cellReducer(sheetState: SheetState, action: Action): SheetState {
+function isInputAReference(value: string) {
+  const isFormulaAReference = value.startsWith("=");
+  const isReferenceValid = ROW_COLUMN_PATTERN.test(value.slice(1));
+  return isFormulaAReference && isReferenceValid;
+}
+
+function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
   const cells = sheetState.cells;
   switch (action.type) {
     case SheetActions.EVALUATE_CELL: {
       const { id: currentId, formula: userInput = "" } = action.payload;
       const currentCell = cells[currentId];
-      const isFormulaAReference = userInput.startsWith("=");
-      const isReferenceValid = ROW_COLUMN_PATTERN.test(userInput.slice(1));
 
-      if (isFormulaAReference && isReferenceValid) {
-        // Add the current cell as dependent of the referenced cell
+      if (isInputAReference(userInput)) {
         const { row, column } = cellIdtoMatrixIndices(userInput);
         const referencedCellId = `${row}-${column}`;
-        const referencedCell = cells[referencedCellId];
+
+        if (referencedCellId === currentId) {
+          return sheetState;
+        }
+
         const isCircularRef = isCircularReference(
           cells,
           currentId,
@@ -66,27 +73,20 @@ function cellReducer(sheetState: SheetState, action: Action): SheetState {
           throw new Error("Circular reference");
         }
 
-        const newValue = referencedCell?.value || "";
-        // Update this cell and all its dependents...okay
-        const updatedCells = updateCell(
-          {
-            ...cells,
-            // referencedCell.dependents.push(currentCell)
-            [referencedCellId]: {
-              ...referencedCell,
-              dependents: [...(referencedCell?.dependents || []), currentId],
-            },
+        const referencedCell = cells[referencedCellId];
+        const updatedCellsWithDependents = Object.assign({}, cells, {
+          [referencedCellId]: {
+            ...referencedCell,
+            dependents: [...(referencedCell?.dependents || []), currentId],
           },
-          {
-            cellId: currentId,
-            newValue,
-          }
-        );
+        });
 
-        return {
-          ...sheetState,
-          cells: updatedCells,
-        };
+        return Object.assign({}, sheetState, {
+          cells: updateCell(updatedCellsWithDependents, {
+            cellId: currentId,
+            newValue: referencedCell?.value || "",
+          }),
+        });
       }
 
       const dependents = currentCell?.dependents || [];
@@ -107,8 +107,8 @@ function cellReducer(sheetState: SheetState, action: Action): SheetState {
           ...sheetState.cells,
           [currentId]: {
             ...cells[currentId],
-            value: userInput || "",
-            formula: userInput || "",
+            value: userInput,
+            formula: userInput,
           },
         },
       };
@@ -132,7 +132,7 @@ type Props = {
 };
 
 export function SheetsProvider({ children, sheetId }: Props) {
-  const [sheetState, dispatchSheetState] = useReducer(cellReducer, {
+  const [sheetState, dispatchSheetState] = useReducer(sheetsReducer, {
     cells: {},
   } as SheetState);
 

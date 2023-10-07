@@ -32,6 +32,9 @@ export function updateCell(
   { cellId, newValue }: UpdateCellPayload
 ): Cells {
   let updatedCells = { ...cells };
+
+  console.log({ updatedCells });
+
   updatedCells[cellId] = {
     ...updatedCells[cellId],
     value: newValue,
