@@ -1,7 +1,6 @@
 import Share from "./components/Share/Share";
 import SheetsContainer from "./components/SheetsContainer/SheetsContainer";
 import { SheetsProvider } from "./context/sheet";
-// import { generateUUID } from "./utils";
 
 function App() {
   const sheetId = "1209fa8d-0492-4808-904d-b4697fbea2ec";

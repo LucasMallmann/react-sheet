@@ -5,11 +5,19 @@ import "./style/reset.css";
 import "./style/global.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { loadSpreadSheetFromLocalStorage } from "./utils/spreadsheet.ts";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+  },
+  {
+    path: "/:sheetId",
+    element: <App />,
+    loader: ({ params }) => {
+      return loadSpreadSheetFromLocalStorage(params.sheetId);
+    },
   },
 ]);
 

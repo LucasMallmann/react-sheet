@@ -1,5 +1,6 @@
 import { cellIdtoMatrixIndices } from "@/utils";
 import { createContext, useContext, useEffect, useReducer } from "react";
+import { useLoaderData } from "react-router-dom";
 
 type Cell = {
   [key: string]: {
@@ -177,20 +178,24 @@ type Props = {
 export function SheetsProvider({ children, sheetId }: Props) {
   const [cells, dispatchCells] = useReducer(cellReducer, {} as Cell);
 
+  const data = useLoaderData();
+
+  useEffect(() => {
+    if (!data || Object.keys(data).length === 0) {
+      return;
+    }
+
+    console.log("Loading from localstorage...");
+
+    dispatchCells({
+      type: SheetActions.LOAD_FROM_LOCALSTORAGE,
+      payload: { cells: data as Cell },
+    });
+  }, [data]);
+
   function saveToLocalStorage() {
     localStorage.setItem(sheetId, JSON.stringify(cells));
   }
-
-  useEffect(() => {
-    const existingCells = localStorage.getItem(sheetId);
-    if (existingCells) {
-      console.log("Loading from local storage");
-      dispatchCells({
-        type: SheetActions.LOAD_FROM_LOCALSTORAGE,
-        payload: { cells: JSON.parse(existingCells) },
-      });
-    }
-  }, [sheetId]);
 
   return (
     <SheetsContext.Provider
