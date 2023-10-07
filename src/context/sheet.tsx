@@ -25,9 +25,14 @@ type ActionPayload = {
   formula: string;
 };
 
+type X = {
+  id: string;
+  formula?: string;
+};
+
 type Action =
   | { type: "UPDATE_CELL_FORMULA"; payload: ActionPayload }
-  | { type: "EVALUATE_CELL"; payload: Omit<ActionPayload, "formula"> }
+  | { type: "EVALUATE_CELL"; payload: X }
   | { type: "CLEAR" };
 
 export enum SheetActions {
@@ -120,15 +125,15 @@ function cellReducer(cellState: Cell, action: Action): Cell {
       };
     }
     case SheetActions.EVALUATE_CELL: {
-      const { id: currentId } = action.payload;
+      const { id: currentId, formula } = action.payload;
       const currentCell = cellState[currentId];
-      const formula = currentCell.formula;
+      const cellFormula = formula || currentCell?.formula;
 
-      const isFormulaAReference = currentCell.formula.startsWith("=");
-      const isReferenceValid = ROW_COLUMN_PATTERN.test(formula);
+      const isFormulaAReference = cellFormula.startsWith("=");
+      const isReferenceValid = ROW_COLUMN_PATTERN.test(cellFormula);
 
       if (isFormulaAReference && isReferenceValid) {
-        const { row, column } = cellIdtoMatrixIndices(formula);
+        const { row, column } = cellIdtoMatrixIndices(cellFormula);
         const referencedCellId = `${row}-${column}`;
         const referencedCell = cellState[referencedCellId];
         const isCircularRef = isCircularReference(
@@ -148,7 +153,7 @@ function cellReducer(cellState: Cell, action: Action): Cell {
           [currentId]: {
             ...cellState[currentId],
             value: referencedCell?.value,
-            formula,
+            formula: cellFormula,
           },
           [referencedCellId]: {
             ...referencedCell,
@@ -157,10 +162,23 @@ function cellReducer(cellState: Cell, action: Action): Cell {
         };
       }
 
-      return updateCell(removeIdFromDependents(cellState, currentId), {
-        cellId: currentId,
-        newValue: formula,
-      });
+      const dependents = currentCell?.dependents || [];
+
+      if (dependents.length > 0) {
+        return updateCell(removeIdFromDependents(cellState, currentId), {
+          cellId: currentId,
+          newValue: cellFormula,
+        });
+      }
+
+      return {
+        ...cellState,
+        [currentId]: {
+          ...cellState[currentId],
+          value: cellFormula,
+          formula: cellFormula,
+        },
+      };
     }
     case SheetActions.CLEAR: {
       return {};

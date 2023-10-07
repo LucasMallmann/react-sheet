@@ -9,7 +9,10 @@ type CellProps = {
 };
 
 function Cell({ id }: CellProps) {
+  const [value, setValue] = useState("");
   const { cells, dispatchCells } = useSheetsContext();
+
+  // const debouncedValue = useDebounce(value);
 
   const cell = cells[id];
 
@@ -27,19 +30,12 @@ function Cell({ id }: CellProps) {
     });
   }
 
-  function updateCellValue(e: React.ChangeEvent<HTMLInputElement>) {
-    dispatchCells({
-      type: SheetActions.UPDATE_CELL_FORMULA,
-      payload: { id, formula: e.target.value },
-    });
-  }
-
   function enableEvaluateCell(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
       setEditMode(false);
       dispatchCells({
         type: SheetActions.EVALUATE_CELL,
-        payload: { id },
+        payload: { id, formula: value },
       });
     }
   }
@@ -47,8 +43,8 @@ function Cell({ id }: CellProps) {
   if (isEditMode) {
     return (
       <input
-        value={cell?.formula || ""}
-        onChange={updateCellValue}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         type="text"
         data-cell-id={id}
         className={[classes.input, classes.base].join(" ")}
