@@ -9,7 +9,7 @@ const numberOfColumns = 10;
 const numberOfRows = 10;
 
 function SheetsContainer() {
-  const { dispatchCells } = useSheetsContext();
+  const { dispatchCells, saveToLocalStorage } = useSheetsContext();
 
   function renderTableHeaders() {
     return (
@@ -49,6 +49,10 @@ function SheetsContainer() {
       >
         Clear
       </button>
+      <button type="button" onClick={saveToLocalStorage}>
+        Save
+      </button>
+
       <table>
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>

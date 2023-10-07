@@ -1,5 +1,5 @@
 import { cellIdtoMatrixIndices } from "@/utils";
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 
 type Cell = {
   [key: string]: {
@@ -12,33 +12,21 @@ type Cell = {
 type ContextData = {
   cells: Cell;
   dispatchCells: React.Dispatch<Action>;
+  saveToLocalStorage: () => void;
 };
 
 const SheetsContext = createContext<ContextData | undefined>(undefined);
 
-type Props = {
-  children: React.ReactNode;
-};
-
-type ActionPayload = {
-  id: string;
-  formula: string;
-};
-
-type X = {
-  id: string;
-  formula?: string;
-};
-
 type Action =
-  | { type: "UPDATE_CELL_FORMULA"; payload: ActionPayload }
-  | { type: "EVALUATE_CELL"; payload: X }
-  | { type: "CLEAR" };
+  | { type: "EVALUATE_CELL"; payload: { id: string; formula?: string } }
+  | { type: "CLEAR" }
+  | { type: "LOAD_FROM_LOCALSTORAGE"; payload: { cells: Cell } };
 
 export enum SheetActions {
   UPDATE_CELL_FORMULA = "UPDATE_CELL_FORMULA",
   EVALUATE_CELL = "EVALUATE_CELL",
   CLEAR = "CLEAR",
+  LOAD_FROM_LOCALSTORAGE = "LOAD_FROM_LOCALSTORAGE",
 }
 
 const ROW_COLUMN_PATTERN = /([A-Za-z]+)([0-9]+)/;
@@ -113,17 +101,6 @@ function isCircularReference(
 
 function cellReducer(cellState: Cell, action: Action): Cell {
   switch (action.type) {
-    case SheetActions.UPDATE_CELL_FORMULA: {
-      const { id: currentCell, formula } = action.payload;
-      return {
-        ...cellState,
-        [currentCell]: {
-          ...cellState[currentCell],
-          value: formula,
-          formula,
-        },
-      };
-    }
     case SheetActions.EVALUATE_CELL: {
       const { id: currentId, formula } = action.payload;
       const currentCell = cellState[currentId];
@@ -185,15 +162,40 @@ function cellReducer(cellState: Cell, action: Action): Cell {
     case SheetActions.CLEAR: {
       return {};
     }
+    case SheetActions.LOAD_FROM_LOCALSTORAGE: {
+      return action.payload.cells;
+    }
   }
   return cellState;
 }
 
-export function SheetsProvider({ children }: Props) {
+type Props = {
+  children: React.ReactNode;
+  sheetId: string;
+};
+
+export function SheetsProvider({ children, sheetId }: Props) {
   const [cells, dispatchCells] = useReducer(cellReducer, {} as Cell);
 
+  function saveToLocalStorage() {
+    localStorage.setItem(sheetId, JSON.stringify(cells));
+  }
+
+  useEffect(() => {
+    const existingCells = localStorage.getItem(sheetId);
+    if (existingCells) {
+      console.log("Loading from local storage");
+      dispatchCells({
+        type: SheetActions.LOAD_FROM_LOCALSTORAGE,
+        payload: { cells: JSON.parse(existingCells) },
+      });
+    }
+  }, [sheetId]);
+
   return (
-    <SheetsContext.Provider value={{ cells, dispatchCells }}>
+    <SheetsContext.Provider
+      value={{ cells, dispatchCells, saveToLocalStorage }}
+    >
       {children}
     </SheetsContext.Provider>
   );
