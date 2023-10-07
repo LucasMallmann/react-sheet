@@ -162,19 +162,6 @@ function cellReducer(cellState: Cell, action: Action): Cell {
             newValue,
           }
         );
-
-        // return {
-        //   ...cellState,
-        //   [currentId]: {
-        //     ...cellState[currentId],
-        //     value: referencedCell?.value,
-        //     formula: cellFormula,
-        //   },
-        //   [referencedCellId]: {
-        //     ...referencedCell,
-        //     dependents: [...(referencedCell?.dependents || []), currentId],
-        //   },
-        // };
       }
 
       const dependents = currentCell?.dependents || [];
