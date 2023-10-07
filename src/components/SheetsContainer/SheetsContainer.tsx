@@ -1,7 +1,7 @@
 import Cell from "@/components/Cell/Cell";
 
 import CellAxis from "@/components/Cell/CellAxis";
-import { numberToChar } from "@/utils";
+import { numberToChar } from "@/utils/number-to-char";
 import classes from "./SheetsContainer.module.scss";
 import { SheetActions, useSheetsContext } from "@/context/sheet";
 

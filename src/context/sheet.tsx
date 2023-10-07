@@ -1,8 +1,13 @@
-import { cellIdtoMatrixIndices } from "@/utils";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { useLoaderData } from "react-router-dom";
+import { cellIdtoMatrixIndices } from "@/utils/cell-id-to-matrix";
+import {
+  isCircularReference,
+  removeIdFromDependents,
+  updateCell,
+} from "@/utils/cell";
 
-type Cell = {
+type Cells = {
   [key: string]: {
     value: string;
     formula: string;
@@ -10,8 +15,13 @@ type Cell = {
   };
 };
 
+type SheetState = {
+  cells: Cells;
+  circularReference?: unknown;
+};
+
 type ContextData = {
-  cells: Cell;
+  cells: Cells;
   dispatchCells: React.Dispatch<Action>;
   saveToLocalStorage: () => void;
 };
@@ -21,7 +31,7 @@ const SheetsContext = createContext<ContextData | undefined>(undefined);
 type Action =
   | { type: "EVALUATE_CELL"; payload: { id: string; formula?: string } }
   | { type: "CLEAR" }
-  | { type: "LOAD_FROM_LOCALSTORAGE"; payload: { cells: Cell } };
+  | { type: "LOAD_FROM_LOCALSTORAGE"; payload: { cells: Cells } };
 
 export enum SheetActions {
   UPDATE_CELL_FORMULA = "UPDATE_CELL_FORMULA",
@@ -30,92 +40,24 @@ export enum SheetActions {
   LOAD_FROM_LOCALSTORAGE = "LOAD_FROM_LOCALSTORAGE",
 }
 
-const ROW_COLUMN_PATTERN = /([A-Za-z]+)([0-9]+)/;
+const ROW_COLUMN_PATTERN = /^([A-Za-z]+)([0-9]+)$/;
 
-type UpdateCellPayload = {
-  cellId: string;
-  newValue: string;
-};
-
-function removeIdFromDependents(cells: Cell, id: string): Cell {
-  const updatedCells = { ...cells };
-  for (const cellId in updatedCells) {
-    if (updatedCells[cellId]) {
-      const dependents = updatedCells[cellId]?.dependents || [];
-      if (dependents.includes(id)) {
-        updatedCells[cellId] = {
-          ...updatedCells[cellId],
-          dependents: dependents.filter((dependentId) => dependentId !== id),
-        };
-      }
-    }
-  }
-  return updatedCells;
-}
-
-function updateCell(
-  cells: Cell,
-  { cellId, newValue }: UpdateCellPayload
-): Cell {
-  let updatedCells = { ...cells };
-  updatedCells[cellId] = {
-    ...updatedCells[cellId],
-    value: newValue,
-  };
-  cells[cellId]?.dependents?.forEach((dependentId) => {
-    updatedCells = updateCell(updatedCells, {
-      cellId: dependentId,
-      newValue,
-    });
-  });
-  return updatedCells;
-}
-
-function isCircularReference(
-  cellState: Cell,
-  cellId: string,
-  referencedCellId: string
-): boolean {
-  const visited = new Set<string>();
-
-  function hasCircularReference(currentId: string) {
-    if (visited.has(currentId)) {
-      return true;
-    }
-    visited.add(currentId);
-    const currentCell = cellState[currentId];
-    const dependents = currentCell?.dependents || [];
-    for (const dependentId of dependents) {
-      if (dependentId === referencedCellId) {
-        return true;
-      }
-      if (hasCircularReference(dependentId)) {
-        return true;
-      }
-    }
-    visited.delete(currentId);
-    return false;
-  }
-
-  return hasCircularReference(cellId);
-}
-
-function cellReducer(cellState: Cell, action: Action): Cell {
+function cellReducer(sheetState: SheetState, action: Action): SheetState {
+  const cells = sheetState.cells;
   switch (action.type) {
     case SheetActions.EVALUATE_CELL: {
-      const { id: currentId, formula } = action.payload;
-      const currentCell = cellState[currentId];
-      const cellFormula = formula || currentCell?.formula;
-
-      const isFormulaAReference = cellFormula.startsWith("=");
-      const isReferenceValid = ROW_COLUMN_PATTERN.test(cellFormula);
+      const { id: currentId, formula: userInput = "" } = action.payload;
+      const currentCell = cells[currentId];
+      const isFormulaAReference = userInput.startsWith("=");
+      const isReferenceValid = ROW_COLUMN_PATTERN.test(userInput.slice(1));
 
       if (isFormulaAReference && isReferenceValid) {
-        const { row, column } = cellIdtoMatrixIndices(cellFormula);
+        // Add the current cell as dependent of the referenced cell
+        const { row, column } = cellIdtoMatrixIndices(userInput);
         const referencedCellId = `${row}-${column}`;
-        const referencedCell = cellState[referencedCellId];
+        const referencedCell = cells[referencedCellId];
         const isCircularRef = isCircularReference(
-          cellState,
+          cells,
           currentId,
           referencedCellId
         );
@@ -124,12 +66,12 @@ function cellReducer(cellState: Cell, action: Action): Cell {
           throw new Error("Circular reference");
         }
 
-        console.log({ isCircularRef, currentId, referencedCellId });
-
         const newValue = referencedCell?.value || "";
-        return updateCell(
+        // Update this cell and all its dependents...okay
+        const updatedCells = updateCell(
           {
-            ...cellState,
+            ...cells,
+            // referencedCell.dependents.push(currentCell)
             [referencedCellId]: {
               ...referencedCell,
               dependents: [...(referencedCell?.dependents || []), currentId],
@@ -140,34 +82,48 @@ function cellReducer(cellState: Cell, action: Action): Cell {
             newValue,
           }
         );
+
+        return {
+          ...sheetState,
+          cells: updatedCells,
+        };
       }
 
       const dependents = currentCell?.dependents || [];
 
       if (dependents.length > 0) {
-        return updateCell(removeIdFromDependents(cellState, currentId), {
-          cellId: currentId,
-          newValue: cellFormula,
-        });
+        return {
+          ...sheetState,
+          cells: updateCell(removeIdFromDependents(cells, currentId), {
+            cellId: currentId,
+            newValue: userInput,
+          }),
+        };
       }
 
       return {
-        ...cellState,
-        [currentId]: {
-          ...cellState[currentId],
-          value: cellFormula,
-          formula: cellFormula,
+        ...sheetState,
+        cells: {
+          ...sheetState.cells,
+          [currentId]: {
+            ...cells[currentId],
+            value: userInput || "",
+            formula: userInput || "",
+          },
         },
       };
     }
     case SheetActions.CLEAR: {
-      return {};
+      return {} as SheetState;
     }
     case SheetActions.LOAD_FROM_LOCALSTORAGE: {
-      return action.payload.cells;
+      return {
+        circularReference: undefined,
+        cells: action.payload.cells,
+      };
     }
   }
-  return cellState;
+  return sheetState;
 }
 
 type Props = {
@@ -176,30 +132,37 @@ type Props = {
 };
 
 export function SheetsProvider({ children, sheetId }: Props) {
-  const [cells, dispatchCells] = useReducer(cellReducer, {} as Cell);
+  const [sheetState, dispatchSheetState] = useReducer(cellReducer, {
+    cells: {},
+  } as SheetState);
 
-  const data = useLoaderData();
+  const sheetFromLocalStorage = useLoaderData();
 
   useEffect(() => {
-    if (!data || Object.keys(data).length === 0) {
+    if (
+      !sheetFromLocalStorage ||
+      Object.keys(sheetFromLocalStorage).length === 0
+    ) {
       return;
     }
 
-    console.log("Loading from localstorage...");
-
-    dispatchCells({
+    dispatchSheetState({
       type: SheetActions.LOAD_FROM_LOCALSTORAGE,
-      payload: { cells: data as Cell },
+      payload: { cells: sheetFromLocalStorage as Cells },
     });
-  }, [data]);
+  }, [sheetFromLocalStorage]);
 
   function saveToLocalStorage() {
-    localStorage.setItem(sheetId, JSON.stringify(cells));
+    localStorage.setItem(sheetId, JSON.stringify(sheetState));
   }
 
   return (
     <SheetsContext.Provider
-      value={{ cells, dispatchCells, saveToLocalStorage }}
+      value={{
+        cells: sheetState.cells,
+        dispatchCells: dispatchSheetState,
+        saveToLocalStorage,
+      }}
     >
       {children}
     </SheetsContext.Provider>
