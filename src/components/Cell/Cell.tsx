@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
+import { useSheetsContext, evaluateCell } from "@/context/sheet";
 import classes from "./Cell.module.scss";
-import { SheetActions, useSheetsContext } from "@/context/sheet";
 
 type CellProps = {
   id: string;
@@ -16,14 +16,13 @@ function Cell({ id, cell }: CellProps) {
   const [value, setValue] = useState("");
   const { dispatchCells } = useSheetsContext();
 
-  // useEffect(() => {
-  //   if (!cell || !cell?.formula) {
-  //     setValue("");
-  //   }
-  // }, [cell]);
-
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  function evaluate() {
+    setEditMode(false);
+    evaluateCell(dispatchCells, { id, formula: value });
+  }
 
   useClickawayCell(id, () => {
     setEditMode(false);
@@ -38,11 +37,7 @@ function Cell({ id, cell }: CellProps) {
 
   function enableEvaluateCell(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
-      setEditMode(false);
-      dispatchCells({
-        type: SheetActions.EVALUATE_CELL,
-        payload: { id, formula: value },
-      });
+      evaluate();
     }
   }
 

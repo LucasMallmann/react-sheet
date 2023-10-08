@@ -1,15 +1,14 @@
 import Cell from "@/components/Cell/Cell";
-
 import CellAxis from "@/components/Cell/CellAxis";
 import { numberToChar } from "@/utils/number-to-char";
+import { useSheetsContext } from "@/context/sheet";
 import classes from "./SheetsContainer.module.scss";
-import { SheetActions, useSheetsContext } from "@/context/sheet";
 
 const numberOfColumns = 10;
 const numberOfRows = 10;
 
 function SheetsContainer() {
-  const { dispatchCells, saveToLocalStorage, cells } = useSheetsContext();
+  const { cells } = useSheetsContext();
 
   function renderTableHeaders() {
     return (
@@ -42,20 +41,6 @@ function SheetsContainer() {
 
   return (
     <div className={classes.container}>
-      <button
-        type="button"
-        onClick={() =>
-          dispatchCells({
-            type: SheetActions.CLEAR,
-          })
-        }
-      >
-        Clear
-      </button>
-      <button type="button" onClick={saveToLocalStorage}>
-        Save
-      </button>
-
       <table>
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>

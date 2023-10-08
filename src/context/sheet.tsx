@@ -12,12 +12,13 @@ type Cells = {
     value: string;
     formula: string;
     dependents?: string[];
+    refError?: boolean;
   };
 };
 
 type SheetState = {
   cells: Cells;
-  circularReference?: unknown;
+  referenceError?: unknown;
 };
 
 type ContextData = {
@@ -26,7 +27,7 @@ type ContextData = {
   saveToLocalStorage: () => void;
 };
 
-const SheetsContext = createContext<ContextData | undefined>(undefined);
+const SheetsContext = createContext<ContextData>({} as ContextData);
 
 type Action =
   | { type: "EVALUATE_CELL"; payload: { id: string; formula?: string } }
@@ -70,7 +71,17 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
         );
 
         if (circularReference) {
-          throw new Error("Circular reference detected");
+          return {
+            cells: {
+              ...cells,
+              [currentId]: {
+                formula: "ERROR!",
+                value: "ERROR!",
+                refError: true,
+                dependents: [],
+              },
+            },
+          };
         }
 
         const referencedCell = cells[referencedCellId];
@@ -120,7 +131,7 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
     }
     case SheetActions.LOAD_FROM_LOCALSTORAGE: {
       return {
-        circularReference: undefined,
+        referenceError: null,
         cells: action.payload.cells,
       };
     }
@@ -172,6 +183,21 @@ export function SheetsProvider({ children, sheetId }: Props) {
 }
 
 SheetsProvider.displayName = "SheetsProvider";
+
+type EvaluateCellParams = {
+  id: string;
+  formula: string;
+};
+
+export function evaluateCell(
+  dispatchCells: React.Dispatch<Action>,
+  { id, formula }: EvaluateCellParams
+) {
+  dispatchCells({
+    type: SheetActions.EVALUATE_CELL,
+    payload: { id, formula },
+  });
+}
 
 export function useSheetsContext() {
   const context = useContext(SheetsContext);

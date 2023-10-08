@@ -59,7 +59,6 @@ export function isCircularReference(
       return true;
     }
     visited.add(currentId);
-
     const currentCell = cellState[currentId];
     const dependents = currentCell?.dependents || [];
     for (const dependentId of dependents) {

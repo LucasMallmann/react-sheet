@@ -8,10 +8,6 @@ type Props = {
 function Share({ children }: Props) {
   const { saveToLocalStorage } = useSheetsContext();
 
-  function shareSheet() {
-    saveToLocalStorage();
-  }
-
   return (
     <button
       type="button"
@@ -20,7 +16,7 @@ function Share({ children }: Props) {
         backgroundColor: "blueviolet",
         cursor: "pointer",
       }}
-      onClick={shareSheet}
+      onClick={() => saveToLocalStorage()}
     >
       {children}
     </button>
