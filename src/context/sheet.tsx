@@ -63,58 +63,54 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
           return sheetState;
         }
 
-        const isCircularRef = isCircularReference(
+        const circularReference = isCircularReference(
           cells,
           currentId,
           referencedCellId
         );
 
-        if (isCircularRef) {
-          throw new Error("Circular reference");
+        if (circularReference) {
+          throw new Error("Circular reference detected");
         }
 
         const referencedCell = cells[referencedCellId];
-        const updatedCellsWithDependents = Object.assign({}, cells, {
-          [referencedCellId]: {
-            ...referencedCell,
-            dependents: [...(referencedCell?.dependents || []), currentId],
-          },
-        });
 
-        return Object.assign({}, sheetState, {
-          cells: updateCell(updatedCellsWithDependents, {
-            cellId: currentId,
-            newValue: referencedCell?.value || "",
-          }),
-        });
+        const updatedReferencedCell = {
+          ...referencedCell,
+          dependents: [...(referencedCell?.dependents || []), currentId],
+        };
+
+        const updatedCells = updateCell(
+          { ...cells, [referencedCellId]: updatedReferencedCell },
+          { cellId: currentId, newValue: referencedCell?.value || "" }
+        );
+
+        return { ...sheetState, cells: updatedCells };
       }
 
       const dependents = currentCell?.dependents || [];
 
       if (dependents.length > 0) {
-        return {
-          ...sheetState,
-          cells: updateCell(removeIdFromDependents(cells, currentId), {
-            cellId: currentId,
-            newValue: userInput,
-          }),
-        };
+        const updatedCells = updateCell(
+          removeIdFromDependents(cells, currentId),
+          { cellId: currentId, newValue: userInput }
+        );
+
+        return { ...sheetState, cells: updatedCells };
       }
 
-      return {
-        ...sheetState,
+      return Object.assign({}, sheetState, {
         cells: removeIdFromDependents(
           {
             ...sheetState.cells,
             [currentId]: {
-              ...cells[currentId],
               value: userInput,
               formula: userInput,
             },
           },
           currentId
         ),
-      };
+      });
     }
     case SheetActions.CLEAR: {
       return {

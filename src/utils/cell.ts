@@ -36,7 +36,7 @@ export function updateCell(
   updatedCells[cellId] = {
     ...updatedCells[cellId],
     value: newValue,
-    formula: newValue,
+    // formula: newValue,
   };
   cells[cellId]?.dependents?.forEach((dependentId) => {
     updatedCells = updateCell(updatedCells, {
@@ -59,15 +59,14 @@ export function isCircularReference(
       return true;
     }
     visited.add(currentId);
+
     const currentCell = cellState[currentId];
     const dependents = currentCell?.dependents || [];
     for (const dependentId of dependents) {
       if (dependentId === referencedCellId) {
         return true;
       }
-      if (hasCircularReference(dependentId)) {
-        return true;
-      }
+      return hasCircularReference(dependentId);
     }
     visited.delete(currentId);
     return false;

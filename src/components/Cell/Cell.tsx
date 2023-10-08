@@ -1,23 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
 import classes from "./Cell.module.scss";
 import { SheetActions, useSheetsContext } from "@/context/sheet";
 
 type CellProps = {
   id: string;
+  cell: {
+    value: string;
+    formula: string;
+    dependents?: string[];
+  };
 };
 
-function Cell({ id }: CellProps) {
+function Cell({ id, cell }: CellProps) {
   const [value, setValue] = useState("");
-  const { cells, dispatchCells } = useSheetsContext();
+  const { dispatchCells } = useSheetsContext();
 
-  const cell = cells[id];
-
-  useEffect(() => {
-    if (!cell || !cell?.value) {
-      setValue("");
-    }
-  }, [cell]);
+  // useEffect(() => {
+  //   if (!cell || !cell?.formula) {
+  //     setValue("");
+  //   }
+  // }, [cell]);
 
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,4 +71,4 @@ function Cell({ id }: CellProps) {
   );
 }
 
-export default Cell;
+export default React.memo(Cell);

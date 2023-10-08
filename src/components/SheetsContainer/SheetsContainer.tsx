@@ -9,7 +9,7 @@ const numberOfColumns = 10;
 const numberOfRows = 10;
 
 function SheetsContainer() {
-  const { dispatchCells, saveToLocalStorage } = useSheetsContext();
+  const { dispatchCells, saveToLocalStorage, cells } = useSheetsContext();
 
   function renderTableHeaders() {
     return (
@@ -30,7 +30,10 @@ function SheetsContainer() {
         <CellAxis>{rowIndex + 1}</CellAxis>
         {[...Array(numberOfColumns)].map((_, columnIndex) => (
           <td key={`${rowIndex}-${columnIndex}`}>
-            <Cell id={`${rowIndex}-${columnIndex}`} />
+            <Cell
+              id={`${rowIndex}-${columnIndex}`}
+              cell={cells[`${rowIndex}-${columnIndex}`]}
+            />
           </td>
         ))}
       </tr>
