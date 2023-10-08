@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
 import classes from "./Cell.module.scss";
