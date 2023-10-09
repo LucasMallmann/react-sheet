@@ -1,18 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
 import { useSheetsContext, evaluateCell } from "@/context/sheet";
 import classes from "./Cell.module.scss";
 
 type CellProps = {
-  id: string;
   cell: {
     value: string;
     formula: string;
     dependents?: string[];
   };
+  row: number;
+  column: number;
+  onMouseOver?: (row: number, column: number) => void;
 };
 
-function Cell({ id, cell }: CellProps) {
+function Cell({ cell, onMouseOver, row, column }: CellProps) {
+  const id = `${row}-${column}`;
+
   const [value, setValue] = useState("");
   const { dispatchCells } = useSheetsContext();
 
@@ -28,12 +32,12 @@ function Cell({ id, cell }: CellProps) {
     setEditMode(false);
   });
 
-  function enableEditMode() {
+  const enableEditMode = useCallback(() => {
     setEditMode(true);
     setTimeout(() => {
       inputRef.current?.focus();
     });
-  }
+  }, []);
 
   function enableEvaluateCell(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
@@ -60,6 +64,11 @@ function Cell({ id, cell }: CellProps) {
       className={[classes.label, classes.base].join(" ")}
       data-cell-id={id}
       onClick={enableEditMode}
+      onMouseEnter={() => {
+        if (onMouseOver) {
+          onMouseOver(row, column);
+        }
+      }}
     >
       {cell?.value || ""}
     </div>

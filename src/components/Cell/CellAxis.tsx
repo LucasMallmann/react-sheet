@@ -3,11 +3,13 @@ import classes from "./Cell.module.scss";
 type Props = {
   children?: React.ReactNode | string;
   scope?: string;
+  highlight?: boolean;
 };
 
-function CellAxis({ children, ...props }: Props) {
+function CellAxis({ children, highlight = false, ...props }: Props) {
+  const cellClass = highlight ? classes.highlight : "";
   return (
-    <th className={classes.axis} {...props}>
+    <th className={[classes.axis, cellClass].join(" ")} {...props}>
       {children}
     </th>
   );
