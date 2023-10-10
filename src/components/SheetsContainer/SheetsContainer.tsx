@@ -1,10 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Cell from "@/components/Cell/Cell";
 import CellAxis from "@/components/Cell/CellAxis";
 import Header from "@/components/Header/Header";
+import Popup from "@/components/Popup/Popup";
 
 import { numberToChar } from "@/utils/number-to-char";
-import { useSheetsContext } from "@/context/sheet";
 
 import styles from "./SheetsContainer.module.scss";
 
@@ -12,7 +12,31 @@ const numberOfColumns = 30;
 const numberOfRows = 100;
 
 function SheetsContainer() {
-  const { cells } = useSheetsContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!modalRef.current) {
+      return;
+    }
+
+    const dialog = modalRef.current as HTMLDialogElement;
+
+    const timeoutId = setTimeout(() => {
+      setIsModalOpen(false);
+      dialog.close();
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [isModalOpen]);
+
+  const onOpenModal = useCallback(() => {
+    if (modalRef.current) {
+      setIsModalOpen(true);
+      const dialog = modalRef.current as HTMLDialogElement;
+      dialog.showModal();
+    }
+  }, []);
 
   const [hightLightCell, setHightLightCell] = useState<{
     row: number | null;
@@ -58,6 +82,7 @@ function SheetsContainer() {
               row={rowIndex}
               column={columnIndex}
               onSelectCell={selectCell}
+              onOpenModal={onOpenModal}
             />
           </td>
         ))}
@@ -68,6 +93,8 @@ function SheetsContainer() {
   return (
     <main className={styles.container}>
       <Header />
+
+      <Popup ref={modalRef} open={isModalOpen} />
 
       <table className={styles.table}>
         <thead>{renderTableHeaders()}</thead>

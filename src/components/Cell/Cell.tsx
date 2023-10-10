@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
-import { useSheetsContext, evaluateCell } from "@/context/sheet";
+import { useSheetsContext, evaluateCell } from "@/context/Sheet";
 import styles from "./Cell.module.scss";
 
 type CellProps = {
   row: number;
   column: number;
   onSelectCell: (row: number | null, column: number | null) => void;
+  onOpenModal?: () => void;
 };
 
-function Cell({ onSelectCell, row, column }: CellProps) {
+function Cell({ onSelectCell, onOpenModal, row, column }: CellProps) {
   const { dispatchCells, cells } = useSheetsContext();
 
   const id = `${row}-${column}`;
@@ -29,6 +30,12 @@ function Cell({ onSelectCell, row, column }: CellProps) {
       setValue(cell?.formula);
     }
   }, [cell?.formula]);
+
+  useEffect(() => {
+    if (cell?.refError && onOpenModal) {
+      onOpenModal();
+    }
+  }, [cell?.refError, onOpenModal]);
 
   function evaluate() {
     setEditMode(false);

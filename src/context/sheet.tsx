@@ -70,6 +70,8 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
           referencedCellId
         );
 
+        console.log({ circularReference });
+
         if (circularReference) {
           return {
             cells: {

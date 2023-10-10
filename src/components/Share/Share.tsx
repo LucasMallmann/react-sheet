@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSheetsContext } from "@/context/sheet";
+import { useSheetsContext } from "@/context/Sheet";
 
 import styles from "./ShareStyle.module.scss";
 import { generateUUID } from "@/utils/uuid";

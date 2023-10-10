@@ -14,7 +14,7 @@ function Header() {
       </div>
 
       <div className={styles.share}>
-        <Share>Share</Share>
+        <Share />
       </div>
     </header>
   );
