@@ -28,5 +28,17 @@ describe("cell", () => {
       expect(updatedCells.cell3.dependents).toEqual(["cell2", "cell3"]);
       expect(updatedCells.cell4.dependents).toEqual(["cell2", "cell10"]);
     });
+
+    it("should handle cells without dependents", () => {
+      const cells = {
+        cell1: { value: "1", formula: "" },
+        cell2: { value: "2", formula: "" },
+      };
+
+      const updatedCells = removeIdFromDependents(cells, "cell1");
+
+      expect(updatedCells.cell1.dependents).toBeUndefined();
+      expect(updatedCells.cell2.dependents).toBeUndefined();
+    });
   });
 });
