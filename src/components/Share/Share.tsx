@@ -2,7 +2,6 @@ import { useSheetsContext } from "@/context/sheet";
 
 type Props = {
   children: React.ReactNode;
-  sheetId: string;
 };
 
 function Share({ children }: Props) {

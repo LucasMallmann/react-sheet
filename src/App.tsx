@@ -1,4 +1,3 @@
-import Share from "./components/Share/Share";
 import SheetsContainer from "./components/SheetsContainer/SheetsContainer";
 import { SheetsProvider } from "./context/sheet";
 
@@ -7,12 +6,7 @@ function App() {
 
   return (
     <SheetsProvider sheetId={sheetId}>
-      <div>
-        <h1>Ola mundo</h1>
-        <SheetsContainer />
-      </div>
-
-      <Share sheetId={sheetId}>Share</Share>
+      <SheetsContainer />
     </SheetsProvider>
   );
 }

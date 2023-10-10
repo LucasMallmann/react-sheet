@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
 import Cell from "@/components/Cell/Cell";
 import CellAxis from "@/components/Cell/CellAxis";
+import Share from "@/components/Share/Share";
 import { numberToChar } from "@/utils/number-to-char";
 import { useSheetsContext } from "@/context/sheet";
-import classes from "./SheetsContainer.module.scss";
+import styles from "./SheetsContainer.module.scss";
 
 const numberOfColumns = 30;
 const numberOfRows = 100;
@@ -19,7 +20,7 @@ function SheetsContainer() {
     column: null,
   });
 
-  const onMouseOver = useCallback((row: number, column: number) => {
+  const selectCell = useCallback((row: number, column: number) => {
     setHightLightCell({ row, column });
   }, []);
 
@@ -56,7 +57,7 @@ function SheetsContainer() {
               row={rowIndex}
               column={columnIndex}
               cell={cells[`${rowIndex}-${columnIndex}`]}
-              onMouseOver={onMouseOver}
+              onSelectCell={selectCell}
             />
           </td>
         ))}
@@ -65,12 +66,14 @@ function SheetsContainer() {
   }
 
   return (
-    <div className={classes.container}>
-      <table onMouseLeave={onMouseLeave}>
+    <section className={styles.container}>
+      <Share>Share</Share>
+
+      <table onMouseLeave={onMouseLeave} className={styles.table}>
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>
       </table>
-    </div>
+    </section>
   );
 }
 
