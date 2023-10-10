@@ -20,13 +20,12 @@ function SheetsContainer() {
     column: null,
   });
 
-  const selectCell = useCallback((row: number, column: number) => {
-    setHightLightCell({ row, column });
-  }, []);
-
-  function onMouseLeave() {
-    setHightLightCell({ row: null, column: null });
-  }
+  const selectCell = useCallback(
+    (row: number | null, column: number | null) => {
+      setHightLightCell({ row, column });
+    },
+    []
+  );
 
   function renderTableHeaders() {
     return (
@@ -69,7 +68,7 @@ function SheetsContainer() {
     <section className={styles.container}>
       <Share>Share</Share>
 
-      <table onMouseLeave={onMouseLeave} className={styles.table}>
+      <table className={styles.table}>
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>
       </table>
