@@ -1,3 +1,23 @@
+$breakpoint-small: 768px;
+$breakpoint-medium: 992px;
+$breakpoint-large: 1200px;
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == small {
+    @media (max-width: $breakpoint-small) {
+      @content;
+    }
+  } @else if $breakpoint == medium {
+    @media (max-width: $breakpoint-medium) {
+      @content;
+    }
+  } @else if $breakpoint == large {
+    @media (max-width: $breakpoint-large) {
+      @content;
+    }
+  }
+}
+
 .button {
   background-color: #e76e04;
   color: white;
@@ -9,5 +29,13 @@
   transition: background-color 0.2s ease-in-out;
   &:hover {
     background-color: #b95803;
+  }
+
+  @include respond-to(small) {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+    font-size: large;
+    margin-bottom: 24px;
   }
 }

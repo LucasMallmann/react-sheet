@@ -20,8 +20,11 @@ function Share({ children }: Props) {
     console.log("generatedUrl", generatedUrl);
 
     if ("clipboard" in navigator) {
+      console.log("Aqui");
       await navigator.clipboard.writeText(generatedUrl);
     } else {
+      console.log("Aqui2");
+
       document.execCommand("copy", true, generatedUrl);
     }
   }
