@@ -1,4 +1,4 @@
-import { Action, SheetActions } from "@/context/types";
+import { Action, Cells, SheetActions, SheetState } from "@/context/types";
 import { describe, expect, it } from "vitest";
 
 import { sheetsReducer } from "@/context/sheets-reducer";
@@ -90,5 +90,54 @@ describe("sheetsReducer", () => {
       // Check if A1 was removed from C5 dependents
       expect(newState.cells["C5"].dependents).toEqual(["F99"]);
     });
+
+    it("should include current cell as dependent of the target cell and update the value", () => {
+      // If I say A1 = B1, then B1 should have A1 as a dependent
+      const initialState = {
+        cells: {
+          B1: {
+            formula: "foo",
+            value: "foo",
+          },
+        },
+      } as unknown as SheetState;
+      const action = makeEvaluateAction({
+        id: "A1",
+        formula: "=B1",
+      });
+      const newState = sheetsReducer(initialState, action);
+      expect(newState).toEqual({
+        cells: {
+          A1: {
+            formula: "=B1",
+            value: "foo",
+            dependents: [],
+          },
+          B1: {
+            formula: "foo",
+            value: "foo",
+            dependents: ["A1"],
+          },
+        },
+      });
+    });
   });
 });
+
+// const initialState = {
+//   cells: {
+//     A1: {
+//       formula: "=B1",
+//       value: "",
+//       dependents: [] as string[],
+//     },
+//     B1: {
+//       formula: "=C1",
+//       value: "",
+//       dependents: ["A1"],
+//     },
+//     C1: {
+//       dependents: ["B1"],
+//     },
+//   },
+// } as unknown as SheetState;
