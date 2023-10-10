@@ -8,11 +8,11 @@
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-300);
 
   th,
   td {
-    border: 1px solid #ccc;
+    border: 1px solid var(--gray-300);
     vertical-align: middle;
   }
 
@@ -21,7 +21,7 @@
     font-size: small;
     font-weight: normal;
     padding: 0 10px;
-    background-color: #ededed;
+    background-color: var(--gray-200);
 
     &:first-child {
       position: sticky;

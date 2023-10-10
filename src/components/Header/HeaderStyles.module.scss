@@ -43,7 +43,7 @@ $breakpoint-large: 1200px;
       font-size: larger;
       margin-left: 20px;
       font-weight: bold;
-      color: #444746;
+      color: var(--gray-800);
 
       @include respond-to(small) {
         font-size: medium;

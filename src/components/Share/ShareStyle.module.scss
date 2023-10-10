@@ -29,7 +29,7 @@ $breakpoint-large: 1200px;
 }
 
 .button {
-  background-color: #e76e04;
+  background-color: var(--orange-500);
   color: white;
   font-weight: bold;
   padding: 8px 28px;
@@ -38,7 +38,7 @@ $breakpoint-large: 1200px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   &:hover {
-    background-color: #b95803;
+    background-color: var(--orange-600);
   }
 
   @include respond-to(small) {

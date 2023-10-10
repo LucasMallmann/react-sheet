@@ -10,4 +10,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --blue-300: #d3e3fd;
+  --blue-500: #0b57d0;
+
+  --gray-800: #444746;
+  --gray-200: #ededed;
+  --gray-300: #ccc;
+
+  --orange-500: #e76e04;
+  --orange-600: #b95803;
 }

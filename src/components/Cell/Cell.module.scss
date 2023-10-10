@@ -1,6 +1,6 @@
 .input {
   &:focus {
-    border: 1px solid #0b57d0;
+    border: 1px solid var(--blue-500);
   }
   background-color: 000;
   display: block;
@@ -28,5 +28,5 @@
 }
 
 .highlight {
-  background-color: #d3e3fd !important;
+  background-color: var(--blue-300) !important;
 }

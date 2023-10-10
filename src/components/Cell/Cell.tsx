@@ -15,6 +15,10 @@ function Cell({ onSelectCell, row, column }: CellProps) {
   const id = `${row}-${column}`;
   const cell = cells[id];
 
+  if (id === "0-1") {
+    console.log(cell?.refError);
+  }
+
   const [value, setValue] = useState("");
 
   const [isEditMode, setEditMode] = useState(false);
@@ -63,9 +67,12 @@ function Cell({ onSelectCell, row, column }: CellProps) {
     );
   }
 
+  const classNames = [styles.label, styles.base].join(" ");
+
   return (
     <div
-      className={[styles.label, styles.base].join(" ")}
+      data-title="Celula"
+      className={classNames}
       data-cell-id={id}
       onClick={enableEditMode}
     >
