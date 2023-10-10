@@ -1,7 +1,7 @@
 import { describe } from "node:test";
 import { expect, it } from "vitest";
 
-import { removeIdFromDependents } from "@/utils/cell";
+import { removeIdFromDependents, updateCell } from "@/utils/cell";
 
 describe("cell", () => {
   describe("removeIdFromDependents", () => {
@@ -20,9 +20,7 @@ describe("cell", () => {
           dependents: ["cell1", "cell2", "cell10"],
         },
       };
-
       const updatedCells = removeIdFromDependents(cells, "cell1");
-
       expect(updatedCells.cell1.dependents).toEqual(["cell2", "cell3"]);
       expect(updatedCells.cell2.dependents).toEqual([]);
       expect(updatedCells.cell3.dependents).toEqual(["cell2", "cell3"]);
@@ -46,6 +44,24 @@ describe("cell", () => {
       };
       const updatedCells = removeIdFromDependents(cells, "cell3");
       expect(updatedCells).toEqual(cells);
+    });
+  });
+
+  describe("updateCell", () => {
+    it("should update the value of the specified cell", () => {
+      const cells = {
+        cell1: { value: "1", formula: "", dependents: ["cell2"] },
+        cell2: { value: "2", formula: "", dependents: ["cell4"] },
+        cell3: { value: "3", formula: "", dependents: ["cell4"] },
+        cell4: { value: "4", formula: "", dependents: [] },
+      };
+      const updatedCells = updateCell(cells, {
+        cellId: "cell1",
+        newValue: "5",
+      });
+      expect(updatedCells.cell1.value).toBe("5");
+      expect(updatedCells.cell2.value).toBe("5");
+      expect(updatedCells.cell4.value).toBe("5");
     });
   });
 });
