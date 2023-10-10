@@ -78,5 +78,30 @@ describe("cell", () => {
       expect(updatedCells.cell2.value).toBe("5");
       expect(updatedCells.cell3.value).toBe("5");
     });
+
+    it("should handle cells without dependents", () => {
+      const cells = {
+        cell1: { value: "1", formula: "" },
+        cell2: { value: "2", formula: "" },
+      };
+      const updatedCells = updateCell(cells, {
+        cellId: "cell1",
+        newValue: "5",
+      });
+      expect(updatedCells.cell1.value).toBe("5");
+      expect(updatedCells.cell2.value).toBe("2");
+    });
+
+    it("should not update other cells if cellId is not found", () => {
+      const cells = {
+        cell1: { value: "1", formula: "", dependents: ["cell2"] },
+        cell2: { value: "2", formula: "", dependents: [] },
+      };
+      const updatedCells = updateCell(cells, {
+        cellId: "cell3",
+        newValue: "5",
+      });
+      expect(updatedCells).toEqual(cells);
+    });
   });
 });

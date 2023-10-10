@@ -33,6 +33,10 @@ export function updateCell(
 ): Cells {
   let updatedCells = { ...cells };
 
+  if (!updatedCells[cellId]) {
+    return updatedCells;
+  }
+
   updatedCells[cellId] = {
     ...updatedCells[cellId],
     value: newValue,
