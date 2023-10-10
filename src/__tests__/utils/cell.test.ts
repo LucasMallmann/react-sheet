@@ -63,5 +63,20 @@ describe("cell", () => {
       expect(updatedCells.cell2.value).toBe("5");
       expect(updatedCells.cell4.value).toBe("5");
     });
+
+    it("should update multiple cells and their dependents", () => {
+      const cells = {
+        cell1: { value: "1", formula: "", dependents: ["cell2"] },
+        cell2: { value: "2", formula: "", dependents: ["cell3"] },
+        cell3: { value: "3", formula: "", dependents: [] },
+      };
+      const updatedCells = updateCell(cells, {
+        cellId: "cell1",
+        newValue: "5",
+      });
+      expect(updatedCells.cell1.value).toBe("5");
+      expect(updatedCells.cell2.value).toBe("5");
+      expect(updatedCells.cell3.value).toBe("5");
+    });
   });
 });
