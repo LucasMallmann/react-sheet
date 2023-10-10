@@ -18,6 +18,16 @@ $breakpoint-large: 1200px;
   }
 }
 
+.container {
+  display: flex;
+  align-items: center;
+
+  a {
+    font-size: small;
+    margin-right: 12px;
+  }
+}
+
 .button {
   background-color: #e76e04;
   color: white;

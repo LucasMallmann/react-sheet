@@ -1,37 +1,42 @@
+import { useEffect, useState } from "react";
 import { useSheetsContext } from "@/context/sheet";
 
 import styles from "./ShareStyle.module.scss";
 import { generateUUID } from "@/utils/uuid";
+import { unsafeCopy } from "@/utils/unsafe-copy";
 
-type Props = {
-  children: React.ReactNode;
-};
-
-function Share({ children }: Props) {
+function Share() {
+  const [text, setText] = useState("Share");
   const { saveToLocalStorage } = useSheetsContext();
 
   async function handleClick() {
-    const url = window.location.href;
+    const url = window.location.host;
+    const protocol = window.location.protocol;
     const id = generateUUID();
-    const generatedUrl = `${url}${id}`;
+    const generatedUrl = `${protocol}//${url}/${id}`;
 
     saveToLocalStorage(id);
 
-    console.log("generatedUrl", generatedUrl);
-
     if ("clipboard" in navigator) {
-      console.log("Aqui");
       await navigator.clipboard.writeText(generatedUrl);
     } else {
-      console.log("Aqui2");
-
-      document.execCommand("copy", true, generatedUrl);
+      unsafeCopy(generatedUrl);
     }
+
+    setText("Copied to clipboard!");
   }
+
+  useEffect(() => {
+    const timetoutId = setTimeout(() => {
+      setText("Share");
+    }, 2000);
+
+    return () => clearTimeout(timetoutId);
+  }, [text]);
 
   return (
     <button type="button" className={styles.button} onClick={handleClick}>
-      {children}
+      {text}
     </button>
   );
 }
