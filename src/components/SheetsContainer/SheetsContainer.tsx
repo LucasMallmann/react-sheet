@@ -4,11 +4,11 @@ import CellAxis from "@/components/Cell/CellAxis";
 import Header from "@/components/Header/Header";
 import Popup from "@/components/Popup/Popup";
 
+import { useSheetsContext } from "@/context/Sheet";
+import { useModal } from "@/hooks/use-modal";
 import { numberToChar } from "@/utils/number-to-char";
 
 import styles from "./SheetsContainer.module.scss";
-import { useSheetsContext } from "@/context/Sheet";
-import { useModal } from "@/hooks/use-modal";
 
 const numberOfColumns = 30;
 const numberOfRows = 100;

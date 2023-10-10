@@ -16,10 +16,6 @@ function Cell({ onSelectCell, onOpenModal, row, column }: CellProps) {
   const id = `${row}-${column}`;
   const cell = cells[id];
 
-  if (id === "0-1") {
-    console.log(cell?.refError);
-  }
-
   const [value, setValue] = useState("");
 
   const [isEditMode, setEditMode] = useState(false);
