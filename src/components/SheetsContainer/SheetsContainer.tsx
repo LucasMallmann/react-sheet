@@ -1,9 +1,11 @@
 import { useCallback, useState } from "react";
 import Cell from "@/components/Cell/Cell";
 import CellAxis from "@/components/Cell/CellAxis";
-import Share from "@/components/Share/Share";
+import Header from "@/components/Header/Header";
+
 import { numberToChar } from "@/utils/number-to-char";
 import { useSheetsContext } from "@/context/sheet";
+
 import styles from "./SheetsContainer.module.scss";
 
 const numberOfColumns = 30;
@@ -65,14 +67,14 @@ function SheetsContainer() {
   }
 
   return (
-    <section className={styles.container}>
-      <Share>Share</Share>
+    <main className={styles.container}>
+      <Header />
 
       <table className={styles.table}>
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>
       </table>
-    </section>
+    </main>
   );
 }
 

@@ -68,7 +68,9 @@ function Cell({ cell, onSelectCell, row, column }: CellProps) {
       data-cell-id={id}
       onClick={enableEditMode}
     >
-      {cell?.value || ""}
+      <span role="button" onClick={enableEditMode}>
+        {cell?.value || ""}
+      </span>
     </div>
   );
 }
