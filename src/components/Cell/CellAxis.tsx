@@ -9,7 +9,7 @@ type Props = {
 function CellAxis({ children, highlight = false, ...props }: Props) {
   const cellClass = highlight ? classes.highlight : "";
   return (
-    <th className={[classes.axis, cellClass].join(" ")} {...props}>
+    <th className={cellClass} {...props}>
       {children}
     </th>
   );

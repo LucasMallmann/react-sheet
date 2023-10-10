@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
 import { useSheetsContext, evaluateCell } from "@/context/sheet";
-import classes from "./Cell.module.scss";
+import styles from "./Cell.module.scss";
 
 type CellProps = {
   cell: {
@@ -11,10 +11,10 @@ type CellProps = {
   };
   row: number;
   column: number;
-  onMouseOver?: (row: number, column: number) => void;
+  onSelectCell: (row: number | null, column: number | null) => void;
 };
 
-function Cell({ cell, onMouseOver, row, column }: CellProps) {
+function Cell({ cell, onSelectCell, row, column }: CellProps) {
   const id = `${row}-${column}`;
 
   const [value, setValue] = useState("");
@@ -30,14 +30,17 @@ function Cell({ cell, onMouseOver, row, column }: CellProps) {
 
   useClickawayCell(id, () => {
     setEditMode(false);
+    // onSelectCell(null, null);
   });
 
   const enableEditMode = useCallback(() => {
     setEditMode(true);
+    console.log("alert");
     setTimeout(() => {
       inputRef.current?.focus();
     });
-  }, []);
+    onSelectCell(row, column);
+  }, [column, onSelectCell, row]);
 
   function enableEvaluateCell(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
@@ -52,23 +55,18 @@ function Cell({ cell, onMouseOver, row, column }: CellProps) {
         onChange={(e) => setValue(e.target.value)}
         type="text"
         data-cell-id={id}
-        className={[classes.input, classes.base].join(" ")}
         ref={inputRef}
         onKeyDown={enableEvaluateCell}
+        className={styles.input}
       />
     );
   }
 
   return (
     <div
-      className={[classes.label, classes.base].join(" ")}
+      className={[styles.label, styles.base].join(" ")}
       data-cell-id={id}
       onClick={enableEditMode}
-      onMouseEnter={() => {
-        if (onMouseOver) {
-          onMouseOver(row, column);
-        }
-      }}
     >
       {cell?.value || ""}
     </div>
