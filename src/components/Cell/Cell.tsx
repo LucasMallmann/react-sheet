@@ -1,27 +1,30 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
 import { useSheetsContext, evaluateCell } from "@/context/sheet";
 import styles from "./Cell.module.scss";
 
 type CellProps = {
-  cell: {
-    value: string;
-    formula: string;
-    dependents?: string[];
-  };
   row: number;
   column: number;
   onSelectCell: (row: number | null, column: number | null) => void;
 };
 
-function Cell({ cell, onSelectCell, row, column }: CellProps) {
+function Cell({ onSelectCell, row, column }: CellProps) {
+  const { dispatchCells, cells } = useSheetsContext();
+
   const id = `${row}-${column}`;
+  const cell = cells[id];
 
   const [value, setValue] = useState("");
-  const { dispatchCells } = useSheetsContext();
 
   const [isEditMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (cell?.formula) {
+      setValue(cell?.formula);
+    }
+  }, [cell?.formula]);
 
   function evaluate() {
     setEditMode(false);
@@ -30,12 +33,10 @@ function Cell({ cell, onSelectCell, row, column }: CellProps) {
 
   useClickawayCell(id, () => {
     setEditMode(false);
-    // onSelectCell(null, null);
   });
 
   const enableEditMode = useCallback(() => {
     setEditMode(true);
-    console.log("alert");
     setTimeout(() => {
       inputRef.current?.focus();
     });

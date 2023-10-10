@@ -57,7 +57,6 @@ function SheetsContainer() {
             <Cell
               row={rowIndex}
               column={columnIndex}
-              cell={cells[`${rowIndex}-${columnIndex}`]}
               onSelectCell={selectCell}
             />
           </td>
