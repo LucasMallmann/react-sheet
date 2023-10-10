@@ -1,45 +1,14 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
-import { useLoaderData } from "react-router-dom";
+import { createContext, useContext, useReducer } from "react";
 import { cellIdtoMatrixIndices } from "@/utils/cell-id-to-matrix";
 import {
   isCircularReference,
   removeIdFromDependents,
   updateCell,
 } from "@/utils/cell";
-
-type Cells = {
-  [key: string]: {
-    value: string;
-    formula: string;
-    dependents?: string[];
-    refError?: boolean;
-  };
-};
-
-type SheetState = {
-  cells: Cells;
-  referenceError?: unknown;
-};
-
-type ContextData = {
-  cells: Cells;
-  dispatchCells: React.Dispatch<Action>;
-  saveToLocalStorage: (sheetId: string) => void;
-};
+import { useLoadFromLocalStorage } from "@/hooks/use-load-local-storage";
+import { Action, Cells, ContextData, SheetActions, SheetState } from "./types";
 
 const SheetsContext = createContext<ContextData>({} as ContextData);
-
-type Action =
-  | { type: "EVALUATE_CELL"; payload: { id: string; formula?: string } }
-  | { type: "CLEAR" }
-  | { type: "LOAD_FROM_LOCALSTORAGE"; payload: { cells: Cells } };
-
-export enum SheetActions {
-  UPDATE_CELL_FORMULA = "UPDATE_CELL_FORMULA",
-  EVALUATE_CELL = "EVALUATE_CELL",
-  CLEAR = "CLEAR",
-  LOAD_FROM_LOCALSTORAGE = "LOAD_FROM_LOCALSTORAGE",
-}
 
 const ROW_COLUMN_PATTERN = /^([A-Za-z]+)([0-9]+)$/;
 
@@ -157,21 +126,12 @@ export function SheetsProvider({ children }: Props) {
     cells: {},
   } as SheetState);
 
-  const sheetFromLocalStorage = useLoaderData();
-
-  useEffect(() => {
-    if (
-      !sheetFromLocalStorage ||
-      Object.keys(sheetFromLocalStorage).length === 0
-    ) {
-      return;
-    }
-
+  useLoadFromLocalStorage((localStorageData) => {
     dispatchSheetState({
       type: SheetActions.LOAD_FROM_LOCALSTORAGE,
-      payload: { cells: sheetFromLocalStorage as Cells },
+      payload: { cells: localStorageData as Cells },
     });
-  }, [sheetFromLocalStorage]);
+  });
 
   function saveToLocalStorage(sheetId: string) {
     localStorage.setItem(sheetId, JSON.stringify(sheetState.cells));

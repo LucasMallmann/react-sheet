@@ -79,9 +79,7 @@ function Cell({ onSelectCell, onOpenModal, row, column }: CellProps) {
       data-cell-id={id}
       onClick={enableEditMode}
     >
-      <span role="button" onClick={enableEditMode}>
-        {cell?.value || ""}
-      </span>
+      <span onMouseDown={enableEditMode}>{cell?.value || ""}</span>
     </div>
   );
 }
