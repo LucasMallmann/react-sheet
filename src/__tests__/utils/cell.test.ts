@@ -34,11 +34,18 @@ describe("cell", () => {
         cell1: { value: "1", formula: "" },
         cell2: { value: "2", formula: "" },
       };
-
       const updatedCells = removeIdFromDependents(cells, "cell1");
-
       expect(updatedCells.cell1.dependents).toBeUndefined();
       expect(updatedCells.cell2.dependents).toBeUndefined();
+    });
+
+    it("should return the original cells object if the ID is not found", () => {
+      const cells = {
+        cell1: { value: "1", formula: "", dependents: ["cell2"] },
+        cell2: { value: "2", formula: "", dependents: ["cell1"] },
+      };
+      const updatedCells = removeIdFromDependents(cells, "cell3");
+      expect(updatedCells).toEqual(cells);
     });
   });
 });
