@@ -74,13 +74,12 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
 
         if (circularReference) {
           return {
+            ...sheetState,
             cells: {
               ...cells,
               [currentId]: {
-                formula: "ERROR!",
-                value: "ERROR!",
+                ...currentCell,
                 refError: true,
-                dependents: [],
               },
             },
           };
@@ -96,7 +95,11 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
         const updatedCells = updateCell(
           {
             ...cells,
-            [currentId]: { formula: userInput, value: userInput },
+            [currentId]: {
+              formula: userInput,
+              value: userInput,
+              dependents: [...(currentCell?.dependents || [])],
+            },
             [referencedCellId]: updatedReferencedCell,
           },
           { cellId: currentId, newValue: referencedCell?.value || "" }
