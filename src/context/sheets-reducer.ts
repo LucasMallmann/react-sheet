@@ -87,7 +87,7 @@ export function sheetsReducer(
         return { ...sheetState, cells: updatedCells };
       }
 
-      return Object.assign({}, sheetState, {
+      const newState = Object.assign({}, sheetState, {
         cells: removeIdFromDependents(
           {
             ...sheetState.cells,
@@ -99,6 +99,8 @@ export function sheetsReducer(
           currentId
         ),
       });
+
+      return newState;
     }
     case SheetActions.CLEAR: {
       return {
