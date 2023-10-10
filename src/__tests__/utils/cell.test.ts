@@ -1,8 +1,7 @@
-import { describe } from "node:test";
-import { expect, it } from "vitest";
+import { expect, it, describe } from "vitest";
 
 import {
-  isCircularReference,
+  // isCircularReference,
   removeIdFromDependents,
   updateCell,
 } from "@/utils/cell";
@@ -107,27 +106,5 @@ describe("cell", () => {
       });
       expect(updatedCells).toEqual(cells);
     });
-  });
-
-  describe("isCircularReference", () => {
-    // it("should detect a circular reference", () => {
-    //   const cells = {
-    //     B1: {
-    //       formula: "=c1",
-    //       value: "",
-    //     },
-    //     C1: {
-    //       formula: "=d1",
-    //       value: "",
-    //     },
-    //     D1: {
-    //       dependents: ["0-2"],
-    //       formula: "",
-    //       value: "",
-    //     },
-    //   };
-    //   const hasCircularRef = isCircularReference(cells, "D1", "B1");
-    //   expect(hasCircularRef).toBe(true);
-    // });
   });
 });
