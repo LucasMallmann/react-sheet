@@ -29,7 +29,8 @@ type UpdateCellPayload = {
 
 export function updateCell(
   cells: Cells,
-  { cellId, newValue }: UpdateCellPayload
+  { cellId, newValue }: UpdateCellPayload,
+  updateFormula = false
 ): Cells {
   let updatedCells = { ...cells };
 
@@ -39,6 +40,7 @@ export function updateCell(
 
   updatedCells[cellId] = {
     ...updatedCells[cellId],
+    formula: updateFormula ? newValue : updatedCells[cellId].formula,
     value: newValue,
   };
   cells[cellId]?.dependents?.forEach((dependentId) => {

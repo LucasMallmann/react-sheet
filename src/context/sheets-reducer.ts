@@ -38,8 +38,6 @@ export function sheetsReducer(
           referencedCellId
         );
 
-        console.log({ circularReference });
-
         if (circularReference) {
           return {
             ...sheetState,
@@ -81,7 +79,8 @@ export function sheetsReducer(
       if (dependents.length > 0) {
         const updatedCells = updateCell(
           removeIdFromDependents(cells, currentId),
-          { cellId: currentId, newValue: userInput }
+          { cellId: currentId, newValue: userInput },
+          true
         );
 
         return { ...sheetState, cells: updatedCells };
