@@ -24,7 +24,7 @@ type SheetState = {
 type ContextData = {
   cells: Cells;
   dispatchCells: React.Dispatch<Action>;
-  saveToLocalStorage: () => void;
+  saveToLocalStorage: (sheetId: string) => void;
 };
 
 const SheetsContext = createContext<ContextData>({} as ContextData);
@@ -92,7 +92,11 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
         };
 
         const updatedCells = updateCell(
-          { ...cells, [referencedCellId]: updatedReferencedCell },
+          {
+            ...cells,
+            [currentId]: { formula: userInput, value: userInput },
+            [referencedCellId]: updatedReferencedCell,
+          },
           { cellId: currentId, newValue: referencedCell?.value || "" }
         );
 
@@ -141,10 +145,9 @@ function sheetsReducer(sheetState: SheetState, action: Action): SheetState {
 
 type Props = {
   children: React.ReactNode;
-  sheetId: string;
 };
 
-export function SheetsProvider({ children, sheetId }: Props) {
+export function SheetsProvider({ children }: Props) {
   const [sheetState, dispatchSheetState] = useReducer(sheetsReducer, {
     cells: {},
   } as SheetState);
@@ -165,8 +168,8 @@ export function SheetsProvider({ children, sheetId }: Props) {
     });
   }, [sheetFromLocalStorage]);
 
-  function saveToLocalStorage() {
-    localStorage.setItem(sheetId, JSON.stringify(sheetState));
+  function saveToLocalStorage(sheetId: string) {
+    localStorage.setItem(sheetId, JSON.stringify(sheetState.cells));
   }
 
   return (
