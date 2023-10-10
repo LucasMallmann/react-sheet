@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import Cell from "@/components/Cell/Cell";
 import CellAxis from "@/components/Cell/CellAxis";
 import Header from "@/components/Header/Header";
@@ -7,41 +7,24 @@ import Popup from "@/components/Popup/Popup";
 import { numberToChar } from "@/utils/number-to-char";
 
 import styles from "./SheetsContainer.module.scss";
+import { useSheetsContext } from "@/context/Sheet";
+import { useModal } from "@/hooks/use-modal";
 
 const numberOfColumns = 30;
 const numberOfRows = 100;
 
+type HighlightState = {
+  row: number | null;
+  column: number | null;
+};
+
 function SheetsContainer() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef(null);
+  const { modalRef, isModalOpen, onOpenModal } = useModal();
+  const { cells } = useSheetsContext();
 
-  useEffect(() => {
-    if (!modalRef.current) {
-      return;
-    }
+  console.log(JSON.stringify(cells, null, 2));
 
-    const dialog = modalRef.current as HTMLDialogElement;
-
-    const timeoutId = setTimeout(() => {
-      setIsModalOpen(false);
-      dialog.close();
-    }, 3000);
-
-    return () => clearTimeout(timeoutId);
-  }, [isModalOpen]);
-
-  const onOpenModal = useCallback(() => {
-    if (modalRef.current) {
-      setIsModalOpen(true);
-      const dialog = modalRef.current as HTMLDialogElement;
-      dialog.showModal();
-    }
-  }, []);
-
-  const [hightLightCell, setHightLightCell] = useState<{
-    row: number | null;
-    column: number | null;
-  }>({
+  const [hightLightCell, setHightLightCell] = useState<HighlightState>({
     row: null,
     column: null,
   });
