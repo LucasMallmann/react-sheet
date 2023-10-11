@@ -114,5 +114,3 @@ After you've completed the installation, you can run the project either locally 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-Feel free to modify this README.md to match your project's specific requirements and include any additional information that is relevant to your team or users.
