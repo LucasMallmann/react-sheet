@@ -19,19 +19,36 @@ $breakpoint-large: 1200px;
 }
 
 .header {
+  @include respond-to(small) {
+    padding: 16px;
+  }
+
   padding: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @include respond-to(small) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .logo {
   display: flex;
   flex-direction: column;
+
+  @include respond-to(small) {
+    width: 100%;
+  }
+
   > div {
     display: flex;
     align-items: center;
     h1 {
+      @include respond-to(small) {
+        font-size: large;
+      }
       margin-left: 24px;
       font-size: larger;
       font-weight: bold;
@@ -45,10 +62,26 @@ $breakpoint-large: 1200px;
     padding: 0 12px;
     border-radius: 4px;
 
+    @include respond-to(small) {
+      margin-top: 12px;
+      width: 100%;
+    }
+
     span {
       margin-left: 12px;
       font-size: small;
       line-height: 24px;
+    }
+  }
+}
+
+.share {
+  @include respond-to(small) {
+    margin-top: 24px;
+    width: 100%;
+
+    button {
+      width: 100%;
     }
   }
 }
