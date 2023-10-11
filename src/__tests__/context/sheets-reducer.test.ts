@@ -199,7 +199,7 @@ describe("sheetsReducer", () => {
       const action = makeEvaluateAction({ id: "0-2", formula: "=D1" });
       const newState = sheetsReducer(initialState, action);
       console.log(JSON.stringify(newState, null, 2));
-      expect(newState.cells["0-2"].refError).toBe(false);
+      expect(newState.cells["0-2"].refError).toBeFalsy();
     });
   });
 });

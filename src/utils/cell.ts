@@ -59,7 +59,7 @@ export function isCircularReference(
 ): boolean {
   const visited = new Set<string>();
 
-  function hasCircularReference(currentId: string) {
+  function hasCircularReference(currentId: string, referencedCellId: string) {
     if (visited.has(currentId)) {
       return true;
     }
@@ -70,14 +70,13 @@ export function isCircularReference(
       if (dependentId === referencedCellId) {
         return true;
       }
-      if (hasCircularReference(dependentId)) {
+      if (hasCircularReference(dependentId, referencedCellId)) {
         return true;
       }
-      return hasCircularReference(dependentId);
     }
     visited.delete(currentId);
     return false;
   }
 
-  return hasCircularReference(cellId);
+  return hasCircularReference(cellId, referencedCellId);
 }
