@@ -148,3 +148,13 @@ export function evaluateCell(
     payload: { id, formula },
   });
 }
+
+export function clearErrorFromCell(
+  dispatchCells: React.Dispatch<Action>,
+  id: string
+) {
+  dispatchCells({
+    type: SheetActions.CLEAR_ERROR,
+    payload: { id },
+  });
+}

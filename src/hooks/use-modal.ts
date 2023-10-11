@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const TIME_TO_CLOSE = 3000;
 
-export function useModal() {
+export function useModal(onCloseCallback?: () => void) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef<HTMLDialogElement>(null);
 
@@ -14,10 +14,13 @@ export function useModal() {
     const timeoutId = setTimeout(() => {
       setIsModalOpen(false);
       dialog.close();
+      if (onCloseCallback) {
+        onCloseCallback();
+      }
     }, TIME_TO_CLOSE);
 
     return () => clearTimeout(timeoutId);
-  }, [isModalOpen]);
+  }, [isModalOpen, onCloseCallback]);
 
   const onOpenModal = useCallback(() => {
     if (modalRef.current) {
