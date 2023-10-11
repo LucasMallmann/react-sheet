@@ -198,8 +198,39 @@ describe("sheetsReducer", () => {
       } as unknown as SheetState;
       const action = makeEvaluateAction({ id: "0-2", formula: "=D1" });
       const newState = sheetsReducer(initialState, action);
-      console.log(JSON.stringify(newState, null, 2));
       expect(newState.cells["0-2"].refError).toBeFalsy();
+    });
+
+    it("should return circuar reference error if detected", () => {
+      const initialState = {
+        cells: {
+          "0-0": {
+            formula: "=b1",
+            value: "",
+            dependents: [],
+          },
+          "0-1": {
+            formula: "=c1",
+            value: "",
+            dependents: ["0-0"],
+          },
+          "0-2": {
+            vaue: "",
+            formula: "=D1",
+            dependents: ["0-1"],
+          },
+          "0-3": {
+            dependents: ["0-2"],
+          },
+        },
+      } as unknown as SheetState;
+      const action1 = makeEvaluateAction({ id: "0-3", formula: "=A1" });
+      const newState1 = sheetsReducer(initialState, action1);
+      const action2 = makeEvaluateAction({ id: "0-3", formula: "=B1" });
+      const newState2 = sheetsReducer(initialState, action2);
+
+      expect(newState1.cells["0-3"].refError).toBeTruthy();
+      expect(newState2.cells["0-3"].refError).toBeTruthy();
     });
   });
 });
