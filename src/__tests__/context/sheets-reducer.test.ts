@@ -264,4 +264,22 @@ describe("sheetsReducer", () => {
       expect(newState.cells).toEqual({});
     });
   });
+
+  describe("load from localstorage", () => {
+    it("should load from localstorage on success", () => {
+      const initialState = {} as SheetState;
+      const newState = sheetsReducer(initialState, {
+        type: SheetActions.LOAD_FROM_LOCALSTORAGE,
+        payload: {
+          cells: {
+            A1: { value: "foo", formula: "foo" },
+          },
+        },
+      });
+
+      expect(newState.cells).toEqual({
+        A1: { value: "foo", formula: "foo" },
+      });
+    });
+  });
 });
