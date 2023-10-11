@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useCallback, useContext, useReducer } from "react";
 
 import { useLoadFromLocalStorage } from "@/hooks/use-load-local-storage";
 import { Cells, ContextData, SheetActions, SheetState } from "./types";
@@ -15,12 +15,14 @@ export function SheetsProvider({ children }: Props) {
     cells: {},
   } as SheetState);
 
-  useLoadFromLocalStorage((localStorageData) => {
+  const loadFromLocalStorage = useCallback((localStorageData: unknown) => {
     dispatchSheetState({
       type: SheetActions.LOAD_FROM_LOCALSTORAGE,
       payload: { cells: localStorageData as Cells },
     });
-  });
+  }, []);
+
+  useLoadFromLocalStorage(loadFromLocalStorage);
 
   function saveToLocalStorage(sheetId: string) {
     localStorage.setItem(sheetId, JSON.stringify(sheetState.cells));
