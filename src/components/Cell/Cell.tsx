@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
 import { useSheetsContext } from "@/context/Sheet";
-import { clearErrorFromCell, evaluateCell } from "@/context/sheets-reducer";
+import { evaluateCell } from "@/context/sheets-reducer";
+
 import styles from "./Cell.module.scss";
 
 type CellProps = {
@@ -12,7 +13,7 @@ type CellProps = {
 };
 
 function Cell({ onSelectCell, onOpenModal, row, column }: CellProps) {
-  const { dispatchCells, cells } = useSheetsContext();
+  const { dispatchCells, cells, referenceError } = useSheetsContext();
 
   const id = `${row}-${column}`;
   const cell = cells?.[id];
@@ -29,14 +30,10 @@ function Cell({ onSelectCell, onOpenModal, row, column }: CellProps) {
   }, [cell?.formula]);
 
   useEffect(() => {
-    if (cell?.refError && onOpenModal) {
+    if (referenceError && onOpenModal) {
       onOpenModal();
-      const timer = setTimeout(() => {
-        clearErrorFromCell(dispatchCells, id);
-      }, 3000);
-      return () => clearTimeout(timer);
     }
-  }, [cell?.refError, dispatchCells, id, onOpenModal]);
+  }, [onOpenModal, referenceError]);
 
   function evaluate() {
     setEditMode(false);

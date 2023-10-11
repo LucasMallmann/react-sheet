@@ -9,20 +9,21 @@ export type Cells = {
 
 export type SheetState = {
   cells: Cells;
-  referenceError?: unknown;
+  referenceError?: boolean;
 };
 
 export type ContextData = {
   cells: Cells;
   dispatchCells: React.Dispatch<Action>;
   saveToLocalStorage: (sheetId: string) => void;
+  referenceError?: boolean;
 };
 
 export type Action =
   | { type: "EVALUATE_CELL"; payload: { id: string; formula?: string } }
   | { type: "CLEAR" }
   | { type: "LOAD_FROM_LOCALSTORAGE"; payload: { cells: Cells } }
-  | { type: "CLEAR_ERROR"; payload: { id: string } };
+  | { type: "CLEAR_ERROR" };
 
 export enum SheetActions {
   UPDATE_CELL_FORMULA = "UPDATE_CELL_FORMULA",

@@ -40,15 +40,8 @@ export function sheetsReducer(
         if (circularReference) {
           const updated = {
             ...sheetState,
-            cells: {
-              ...cells,
-              [currentId]: {
-                ...currentCell,
-                refError: true,
-              },
-            },
+            referenceError: true,
           };
-          console.log(JSON.stringify(updated, null, 2), `after circular ref`);
           return updated;
         }
 
@@ -103,31 +96,19 @@ export function sheetsReducer(
     case SheetActions.CLEAR: {
       return {
         cells: {},
-        circularReference: null,
+        circularReference: false,
       } as SheetState;
     }
     case SheetActions.LOAD_FROM_LOCALSTORAGE: {
       return {
-        referenceError: null,
+        referenceError: false,
         cells: action.payload.cells,
       };
     }
     case SheetActions.CLEAR_ERROR: {
-      const { id } = action.payload;
-      const cell = cells[id];
-      if (!cell) {
-        return sheetState;
-      }
-      const updatedCell = {
-        ...cell,
-        refError: false,
-      };
       return {
         ...sheetState,
-        cells: {
-          ...cells,
-          [id]: updatedCell,
-        },
+        referenceError: false,
       };
     }
   }
@@ -149,12 +130,8 @@ export function evaluateCell(
   });
 }
 
-export function clearErrorFromCell(
-  dispatchCells: React.Dispatch<Action>,
-  id: string
-) {
+export function clearErrorFromSheet(dispatchCells: React.Dispatch<Action>) {
   dispatchCells({
     type: SheetActions.CLEAR_ERROR,
-    payload: { id },
   });
 }

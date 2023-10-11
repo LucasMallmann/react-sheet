@@ -229,8 +229,8 @@ describe("sheetsReducer", () => {
       const action2 = makeEvaluateAction({ id: "0-3", formula: "=B1" });
       const newState2 = sheetsReducer(initialState, action2);
 
-      expect(newState1.cells["0-3"].refError).toBeTruthy();
-      expect(newState2.cells["0-3"].refError).toBeTruthy();
+      expect(newState1.referenceError).toBeTruthy();
+      expect(newState2.referenceError).toBeTruthy();
     });
   });
 
@@ -310,9 +310,8 @@ describe("sheetsReducer", () => {
       } as unknown as SheetState;
       const newState = sheetsReducer(initialState, {
         type: SheetActions.CLEAR_ERROR,
-        payload: { id: "0-3" },
       });
-      expect(newState.cells["0-3"].refError).toBeFalsy();
+      expect(newState.referenceError).toBeFalsy();
     });
   });
 });

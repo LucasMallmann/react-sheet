@@ -8,6 +8,8 @@ import { useModal } from "@/hooks/use-modal";
 import { numberToChar } from "@/utils/number-to-char";
 
 import styles from "./SheetsContainer.module.scss";
+import { useSheetsContext } from "@/context/Sheet";
+import { clearErrorFromSheet } from "@/context/sheets-reducer";
 
 const numberOfColumns = 30;
 const numberOfRows = 100;
@@ -18,7 +20,10 @@ type HighlightState = {
 };
 
 function SheetsContainer() {
-  const { modalRef, isModalOpen, onOpenModal } = useModal();
+  const { dispatchCells } = useSheetsContext();
+  const { modalRef, isModalOpen, onOpenModal } = useModal(() => {
+    clearErrorFromSheet(dispatchCells);
+  });
 
   const [hightLightCell, setHightLightCell] = useState<HighlightState>({
     row: null,

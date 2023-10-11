@@ -31,6 +31,7 @@ export function SheetsProvider({ children }: Props) {
       value={{
         cells: sheetState.cells,
         dispatchCells: dispatchSheetState,
+        referenceError: sheetState.referenceError,
         saveToLocalStorage,
       }}
     >
