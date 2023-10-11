@@ -72,9 +72,7 @@ function SheetsContainer() {
   return (
     <main className={styles.container}>
       <Header />
-
       <Popup ref={modalRef} open={isModalOpen} />
-
       <table className={styles.table}>
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>

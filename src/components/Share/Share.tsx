@@ -5,6 +5,8 @@ import styles from "./ShareStyle.module.scss";
 import { generateUUID } from "@/utils/uuid";
 import { unsafeCopy } from "@/utils/unsafe-copy";
 
+const TIME_TO_CLOSE = 2000;
+
 function Share() {
   const [text, setText] = useState("Share");
   const { saveToLocalStorage } = useSheetsContext();
@@ -29,7 +31,7 @@ function Share() {
   useEffect(() => {
     const timetoutId = setTimeout(() => {
       setText("Share");
-    }, 2000);
+    }, TIME_TO_CLOSE);
 
     return () => clearTimeout(timetoutId);
   }, [text]);
