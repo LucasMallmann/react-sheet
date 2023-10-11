@@ -112,6 +112,24 @@ export function sheetsReducer(
         cells: action.payload.cells,
       };
     }
+    case SheetActions.CLEAR_ERROR: {
+      const { id } = action.payload;
+      const cell = cells[id];
+      if (!cell) {
+        return sheetState;
+      }
+      const updatedCell = {
+        ...cell,
+        refError: false,
+      };
+      return {
+        ...sheetState,
+        cells: {
+          ...cells,
+          [id]: updatedCell,
+        },
+      };
+    }
   }
   return sheetState;
 }

@@ -282,4 +282,37 @@ describe("sheetsReducer", () => {
       });
     });
   });
+
+  describe("clear error", () => {
+    it("should clear error on success", () => {
+      const initialState = {
+        cells: {
+          "0-0": {
+            formula: "=b1",
+            value: "",
+            dependents: [],
+          },
+          "0-1": {
+            formula: "=c1",
+            value: "",
+            dependents: ["0-0"],
+          },
+          "0-2": {
+            vaue: "",
+            formula: "=D1",
+            dependents: ["0-1"],
+          },
+          "0-3": {
+            dependents: ["0-2"],
+            refError: true,
+          },
+        },
+      } as unknown as SheetState;
+      const newState = sheetsReducer(initialState, {
+        type: SheetActions.CLEAR_ERROR,
+        payload: { id: "0-3" },
+      });
+      expect(newState.cells["0-3"].refError).toBeFalsy();
+    });
+  });
 });
