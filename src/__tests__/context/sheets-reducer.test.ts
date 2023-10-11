@@ -1,4 +1,4 @@
-import { Action, Cells, SheetActions, SheetState } from "@/context/types";
+import { Action, SheetActions, SheetState } from "@/context/types";
 import { describe, expect, it } from "vitest";
 
 import { sheetsReducer } from "@/context/sheets-reducer";
@@ -91,53 +91,91 @@ describe("sheetsReducer", () => {
       expect(newState.cells["C5"].dependents).toEqual(["F99"]);
     });
 
-    it("should include current cell as dependent of the target cell and update the value", () => {
+    it("should include current cell as dependent of the target cell", () => {
       // If I say A1 = B1, then B1 should have A1 as a dependent
       const initialState = {
         cells: {
-          B1: {
+          "0-1": {
             formula: "foo",
             value: "foo",
           },
         },
       } as unknown as SheetState;
       const action = makeEvaluateAction({
-        id: "A1",
+        id: "0-0",
         formula: "=B1",
       });
       const newState = sheetsReducer(initialState, action);
       expect(newState).toEqual({
         cells: {
-          A1: {
+          "0-0": {
             formula: "=B1",
             value: "foo",
             dependents: [],
           },
-          B1: {
+          "0-1": {
             formula: "foo",
             value: "foo",
-            dependents: ["A1"],
+            dependents: ["0-0"],
           },
         },
       });
     });
+
+    it("should update all dependents when cell starts referencing another cell", () => {
+      // If I say A1 = B1, then B1 should have A1 as a dependent
+      const initialState = {
+        cells: {
+          // A1
+          "0-0": {
+            formula: "=B1",
+            value: "bar 1",
+            dependents: ["0-2", "1-2"],
+          },
+          // B1
+          "0-1": {
+            formula: "bar 1",
+            value: "bar 1",
+            dependents: ["0-0"],
+          },
+          // B2
+          "1-1": {
+            formula: "bar bar",
+            value: "bar bar",
+            dependents: [],
+          },
+          // C1
+          "0-2": {
+            formula: "=A1",
+            value: "bar 1",
+            dependents: [],
+          },
+          // C2
+          "1-2": {
+            formula: "=A1",
+            value: "bar 1",
+            dependents: [],
+          },
+        },
+      } as unknown as SheetState;
+
+      const action = makeEvaluateAction({
+        id: "0-0",
+        formula: "=B2",
+      });
+      const newState = sheetsReducer(initialState, action);
+      expect(newState.cells["0-0"].formula).toBe("=B2");
+      expect(newState.cells["0-0"].value).toBe("bar bar");
+      expect(newState.cells["0-0"].dependents).toEqual(["0-2", "1-2"]);
+      // Check if a1 has been removed from b1
+      expect(newState.cells["0-1"].dependents).toEqual([]);
+
+      // Check if b2 has a1
+      expect(newState.cells["1-1"].dependents).toEqual(["0-0"]);
+
+      // Check if c1 and c2 have been updated
+      expect(newState.cells["0-2"].value).toBe("bar bar");
+      expect(newState.cells["1-2"].value).toBe("bar bar");
+    });
   });
 });
-
-// const initialState = {
-//   cells: {
-//     A1: {
-//       formula: "=B1",
-//       value: "",
-//       dependents: [] as string[],
-//     },
-//     B1: {
-//       formula: "=C1",
-//       value: "",
-//       dependents: ["A1"],
-//     },
-//     C1: {
-//       dependents: ["B1"],
-//     },
-//   },
-// } as unknown as SheetState;
