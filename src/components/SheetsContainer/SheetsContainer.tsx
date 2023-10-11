@@ -4,7 +4,6 @@ import CellAxis from "@/components/Cell/CellAxis";
 import Header from "@/components/Header/Header";
 import Popup from "@/components/Popup/Popup";
 
-import { useSheetsContext } from "@/context/Sheet";
 import { useModal } from "@/hooks/use-modal";
 import { numberToChar } from "@/utils/number-to-char";
 
@@ -20,9 +19,6 @@ type HighlightState = {
 
 function SheetsContainer() {
   const { modalRef, isModalOpen, onOpenModal } = useModal();
-  const { cells } = useSheetsContext();
-
-  console.log(JSON.stringify(cells, null, 2));
 
   const [hightLightCell, setHightLightCell] = useState<HighlightState>({
     row: null,

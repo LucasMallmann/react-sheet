@@ -177,5 +177,29 @@ describe("sheetsReducer", () => {
       expect(newState.cells["0-2"].value).toBe("bar bar");
       expect(newState.cells["1-2"].value).toBe("bar bar");
     });
+
+    it("shold not return circular reference error if the cell is not circular", () => {
+      const initialState = {
+        cells: {
+          "0-0": {
+            formula: "=b1",
+            value: "",
+            dependents: [],
+          },
+          "0-1": {
+            formula: "=c1",
+            value: "",
+            dependents: ["0-0"],
+          },
+          "0-2": {
+            dependents: ["0-1"],
+          },
+        },
+      } as unknown as SheetState;
+      const action = makeEvaluateAction({ id: "0-2", formula: "=D1" });
+      const newState = sheetsReducer(initialState, action);
+      console.log(JSON.stringify(newState, null, 2));
+      expect(newState.cells["0-2"].refError).toBe(false);
+    });
   });
 });

@@ -31,6 +31,11 @@ export function sheetsReducer(
           return sheetState;
         }
 
+        console.log(
+          JSON.stringify(cells, null, 2),
+          `before circular ref ${currentId}`
+        );
+
         const circularReference = isCircularReference(
           cells,
           currentId,
@@ -51,14 +56,11 @@ export function sheetsReducer(
         }
 
         const referencedCell = cells[referencedCellId];
-
         const updatedReferencedCell = {
           ...referencedCell,
           dependents: [...(referencedCell?.dependents || []), currentId],
         };
-
         const cleanedCells = removeIdFromDependents(cells, currentId);
-
         const updatedCells = updateCell(
           {
             ...cleanedCells,
@@ -71,7 +73,6 @@ export function sheetsReducer(
           },
           { cellId: currentId, newValue: referencedCell?.value || "" }
         );
-
         return { ...sheetState, cells: updatedCells };
       }
 
