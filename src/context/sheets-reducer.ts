@@ -133,3 +133,18 @@ export function sheetsReducer(
   }
   return sheetState;
 }
+
+type EvaluateCellParams = {
+  id: string;
+  formula: string;
+};
+
+export function evaluateCell(
+  dispatchCells: React.Dispatch<Action>,
+  { id, formula }: EvaluateCellParams
+) {
+  dispatchCells({
+    type: SheetActions.EVALUATE_CELL,
+    payload: { id, formula },
+  });
+}

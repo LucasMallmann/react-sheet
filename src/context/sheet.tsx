@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
 
 import { useLoadFromLocalStorage } from "@/hooks/use-load-local-storage";
-import { Action, Cells, ContextData, SheetActions, SheetState } from "./types";
+import { Cells, ContextData, SheetActions, SheetState } from "./types";
 import { sheetsReducer } from "./sheets-reducer";
 
 const SheetsContext = createContext<ContextData>({} as ContextData);
@@ -40,21 +40,6 @@ export function SheetsProvider({ children }: Props) {
 }
 
 SheetsProvider.displayName = "SheetsProvider";
-
-type EvaluateCellParams = {
-  id: string;
-  formula: string;
-};
-
-export function evaluateCell(
-  dispatchCells: React.Dispatch<Action>,
-  { id, formula }: EvaluateCellParams
-) {
-  dispatchCells({
-    type: SheetActions.EVALUATE_CELL,
-    payload: { id, formula },
-  });
-}
 
 export function useSheetsContext() {
   const context = useContext(SheetsContext);

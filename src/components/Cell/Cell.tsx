@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useClickawayCell } from "@/hooks";
-import { useSheetsContext, evaluateCell } from "@/context/Sheet";
+import { useSheetsContext } from "@/context/Sheet";
+import { evaluateCell } from "@/context/sheets-reducer";
 import styles from "./Cell.module.scss";
 
 type CellProps = {
@@ -14,7 +15,7 @@ function Cell({ onSelectCell, onOpenModal, row, column }: CellProps) {
   const { dispatchCells, cells } = useSheetsContext();
 
   const id = `${row}-${column}`;
-  const cell = cells[id];
+  const cell = cells?.[id];
 
   const [value, setValue] = useState("");
 
