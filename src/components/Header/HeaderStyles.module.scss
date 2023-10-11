@@ -18,47 +18,37 @@ $breakpoint-large: 1200px;
   }
 }
 
-.container {
+.header {
+  padding: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+}
 
-  @include respond-to(small) {
-    flex-direction: column;
-    padding: 8px;
-  }
-
-  .logo {
+.logo {
+  display: flex;
+  flex-direction: column;
+  > div {
     display: flex;
     align-items: center;
-
-    @include respond-to(small) {
-      width: 100%;
-      padding: 0 12px;
-      justify-content: space-between;
-    }
-
     h1 {
+      margin-left: 24px;
       font-size: larger;
-      margin-left: 20px;
       font-weight: bold;
       color: var(--gray-800);
-
-      @include respond-to(small) {
-        font-size: medium;
-      }
     }
   }
 
-  .share {
-    margin-left: 24px;
+  .function {
+    border: 1px solid var(--gray-300);
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 4px;
 
-    @include respond-to(small) {
-      margin-left: 0;
-      width: 100%;
-      display: flex;
-      margin-top: 16px;
+    span {
+      margin-left: 12px;
+      font-size: small;
+      line-height: 24px;
     }
   }
 }

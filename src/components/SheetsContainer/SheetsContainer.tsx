@@ -70,14 +70,18 @@ function SheetsContainer() {
   }
 
   return (
-    <main className={styles.container}>
-      <Header />
+    <div>
+      <Header
+        selectedCellId={`${hightLightCell.row}-${hightLightCell.column}`}
+      />
       <Popup ref={modalRef} open={isModalOpen} />
-      <table className={styles.table}>
-        <thead>{renderTableHeaders()}</thead>
-        <tbody>{renderTableRows()}</tbody>
-      </table>
-    </main>
+      <main className={styles.container}>
+        <table className={styles.table}>
+          <thead>{renderTableHeaders()}</thead>
+          <tbody>{renderTableRows()}</tbody>
+        </table>
+      </main>
+    </div>
   );
 }
 
