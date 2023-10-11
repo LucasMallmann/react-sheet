@@ -31,11 +31,6 @@ export function sheetsReducer(
           return sheetState;
         }
 
-        console.log(
-          JSON.stringify(cells, null, 2),
-          `before circular ref ${currentId}`
-        );
-
         const circularReference = isCircularReference(
           cells,
           currentId,
@@ -43,7 +38,7 @@ export function sheetsReducer(
         );
 
         if (circularReference) {
-          return {
+          const updated = {
             ...sheetState,
             cells: {
               ...cells,
@@ -53,6 +48,8 @@ export function sheetsReducer(
               },
             },
           };
+          console.log(JSON.stringify(updated, null, 2), `after circular ref`);
+          return updated;
         }
 
         const referencedCell = cells[referencedCellId];

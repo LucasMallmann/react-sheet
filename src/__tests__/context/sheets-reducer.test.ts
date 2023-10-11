@@ -233,4 +233,35 @@ describe("sheetsReducer", () => {
       expect(newState2.cells["0-3"].refError).toBeTruthy();
     });
   });
+
+  describe("clear", () => {
+    it("should clear state on sucess", () => {
+      const initialState = {
+        cells: {
+          "0-0": {
+            formula: "=b1",
+            value: "",
+            dependents: [],
+          },
+          "0-1": {
+            formula: "=c1",
+            value: "",
+            dependents: ["0-0"],
+          },
+          "0-2": {
+            vaue: "",
+            formula: "=D1",
+            dependents: ["0-1"],
+          },
+          "0-3": {
+            dependents: ["0-2"],
+          },
+        },
+      } as unknown as SheetState;
+      const newState = sheetsReducer(initialState, {
+        type: SheetActions.CLEAR,
+      });
+      expect(newState.cells).toEqual({});
+    });
+  });
 });
