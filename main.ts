@@ -1,5 +1,6 @@
 import { Action, SheetActions } from "./src/context/types";
 import { sheetsReducer } from "./src/context/sheets-reducer";
+import { cellIdtoMatrixIndices } from "./src/utils/cell-id-to-matrix";
 
 type Payload = { id: string; formula?: string };
 
@@ -14,22 +15,32 @@ const initialState = {
   cells: {
     A1: {
       formula: "=B1",
-      value: "foo",
+      value: "bar 1",
+      dependents: ["C1", "C2"],
     },
     B1: {
-      formula: "foo",
-      value: "foo",
-      dependents: ["A1", "C4"],
+      formula: "bar 1",
+      value: "bar 1",
+      dependents: ["A1"],
     },
-    F6: {
-      formula: "foo",
-      value: "foo",
-      dependents: ["C5", "D3"],
+    B2: {
+      formula: "bar bar",
+      value: "bar bar",
+      dependents: [],
+    },
+    C1: {
+      formula: "=A1",
+      value: "bar 1",
+      dependents: [],
+    },
+    C2: {
+      formula: "=A1",
+      value: "bar 1",
+      dependents: [],
     },
   },
 };
 
-const action = makeEvaluateAction({ id: "A1", formula: "lucas foo bar" });
-const newState = sheetsReducer(initialState, action);
-
-console.log(JSON.stringify(newState, null, 2));
+Object.keys(initialState.cells).forEach((cellId) => {
+  console.log(cellIdtoMatrixIndices(cellId));
+});

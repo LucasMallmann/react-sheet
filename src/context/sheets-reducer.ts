@@ -25,8 +25,7 @@ export function sheetsReducer(
       const currentCell = cells[currentId];
       if (isInputAReference(userInput)) {
         const { row, column } = cellIdtoMatrixIndices(userInput);
-        // const referencedCellId = `${row}-${column}`;
-        const referencedCellId = userInput.slice(1);
+        const referencedCellId = `${row}-${column}`;
 
         if (referencedCellId === currentId) {
           return sheetState;
@@ -37,8 +36,6 @@ export function sheetsReducer(
           currentId,
           referencedCellId
         );
-
-        console.log("circularReference", circularReference);
 
         if (circularReference) {
           return {
@@ -60,9 +57,11 @@ export function sheetsReducer(
           dependents: [...(referencedCell?.dependents || []), currentId],
         };
 
+        const cleanedCells = removeIdFromDependents(cells, currentId);
+
         const updatedCells = updateCell(
           {
-            ...cells,
+            ...cleanedCells,
             [currentId]: {
               formula: userInput,
               value: userInput,
